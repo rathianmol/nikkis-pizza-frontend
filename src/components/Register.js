@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Eye, EyeOff, User, Mail, Lock, CheckCircle, AlertCircle } from "lucide-react";
+import { AuthContext } from '../contexts/AuthContext';
 
 export default function Register() {
   const [formData, setFormData] = useState({
@@ -14,6 +15,9 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  // Auth context
+  const {user, setUser} = useContext(AuthContext);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
