@@ -3,7 +3,7 @@ import { Eye, EyeOff, User, Mail, Lock, CheckCircle, AlertCircle } from "lucide-
 import { AuthContext } from '../contexts/AuthContext';
 
 export default function Register() {
-//   const [formData, setFormData] = useState({
+//   const [registerFormData, setFormData] = useState({
 //     name: "",
 //     email: "",
 //     password: "",
@@ -12,124 +12,124 @@ export default function Register() {
   
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-//   const [errors, setErrors] = useState({});
-//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [registerErrors, setErrors] = useState({});
+//   const [registerIsSubmitting, setIsSubmitting] = useState(false);
 //   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   // Auth context
-  const {user, setUser} = useContext(AuthContext);
+  const {registerFormData, setRegisterFormData, registerErrors, setRegisterErrors, registerIsSubmitting, setRegisterIsSubmitting, registerSuccess, setRegisterSuccess, handleRegisterChange, validateRegisterForm, handleRegisterSubmit, registerSubmitSuccess} = useContext(AuthContext);
 
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+//   const handleRegisterChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData(prev => ({
+//       ...prev,
+//       [name]: value
+//     }));
     
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
-  };
+//     // Clear error when user starts typing
+//     if (registerErrors[name]) {
+//       setErrors(prev => ({ ...prev, [name]: "" }));
+//     }
+//   };
 
-  const validateForm = () => {
-    const newErrors = {};
+//   const validateForm = () => {
+//     const newErrors = {};
 
-    // Name validation
-    if (!formData.name.trim()) {
-      newErrors.name = "Name is required";
-    } else if (formData.name.trim().length < 2) {
-      newErrors.name = "Name must be at least 2 characters";
-    }
+//     // Name validation
+//     if (!registerFormData.name.trim()) {
+//       newErrors.name = "Name is required";
+//     } else if (registerFormData.name.trim().length < 2) {
+//       newErrors.name = "Name must be at least 2 characters";
+//     }
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
+//     // Email validation
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     if (!registerFormData.email) {
+//       newErrors.email = "Email is required";
+//     } else if (!emailRegex.test(registerFormData.email)) {
+//       newErrors.email = "Please enter a valid email address";
+//     }
 
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    } else if (formData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
+//     // Password validation
+//     if (!registerFormData.password) {
+//       newErrors.password = "Password is required";
+//     } else if (registerFormData.password.length < 6) {
+//       newErrors.password = "Password must be at least 6 characters";
+//     }
 
-    // Confirm password validation
-    if (!formData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (formData.password !== formData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
+//     // Confirm password validation
+//     if (!registerFormData.confirmPassword) {
+//       newErrors.confirmPassword = "Please confirm your password";
+//     } else if (registerFormData.password !== registerFormData.confirmPassword) {
+//       newErrors.confirmPassword = "Passwords do not match";
+//     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+//     setErrors(newErrors);
+//     return Object.keys(newErrors).length === 0;
+//   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+//   const handleRegisterSubmit = async (e) => {
+//     e.preventDefault();
     
-    if (!validateForm()) return;
+//     if (!validateForm()) return;
 
-    setIsSubmitting(true);
+//     setIsSubmitting(true);
     
-    // Simulate API call
-    try {
-      const response = await fetch('http://localhost:8000/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          // Add CSRF token if needed
-          // 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          password_confirmation: formData.confirmPassword, // Laravel expects this field name
-        }),
-      });
+//     // Simulate API call
+//     try {
+//       const response = await fetch('http://localhost:8000/api/register', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'Accept': 'application/json',
+//           // Add CSRF token if needed
+//           // 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
+//         },
+//         body: JSON.stringify({
+//           name: registerFormData.name,
+//           email: registerFormData.email,
+//           password: registerFormData.password,
+//           password_confirmation: registerFormData.confirmPassword, // Laravel expects this field name
+//         }),
+//       });
 
-      const data = await response.json();
+//       const data = await response.json();
 
-      if (response.ok) {
-        // Registration successful
-        console.log("Registration successful:", data);
-        setSubmitSuccess(true);
+//       if (response.ok) {
+//         // Registration successful
+//         console.log("Registration successful:", data);
+//         setSubmitSuccess(true);
         
-        // Reset form after success
-        setTimeout(() => {
-          setFormData({
-            name: "",
-            email: "",
-            password: "",
-            confirmPassword: ""
-          });
-          setSubmitSuccess(false);
-        }, 3000);
+//         // Reset form after success
+//         setTimeout(() => {
+//           setFormData({
+//             name: "",
+//             email: "",
+//             password: "",
+//             confirmPassword: ""
+//           });
+//           setSubmitSuccess(false);
+//         }, 3000);
         
-      } else {
-        // Handle validation errors from Laravel
-        if (data.errors) {
-          setErrors(data.errors);
-        } else {
-          // Handle other errors
-          setErrors({ general: data.message || 'Registration failed. Please try again.' });
-        }
-      }
+//       } else {
+//         // Handle validation registerErrors from Laravel
+//         if (data.registerErrors) {
+//           setErrors(data.registerErrors);
+//         } else {
+//           // Handle other registerErrors
+//           setErrors({ general: data.message || 'Registration failed. Please try again.' });
+//         }
+//       }
       
-    } catch (error) {
-      console.error("Registration failed:", error);
-      setErrors({ general: 'Network error. Please check your connection and try again.' });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+//     } catch (error) {
+//       console.error("Registration failed:", error);
+//       setErrors({ general: 'Network error. Please check your connection and try again.' });
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   };
 
-  if (submitSuccess) {
+  if (registerSubmitSuccess) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
@@ -161,18 +161,18 @@ export default function Register() {
                 type="text"
                 id="name"
                 name="name"
-                value={formData.name}
-                onChange={handleChange}
+                value={registerFormData.name}
+                onChange={handleRegisterChange}
                 className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                  errors.name ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+                  registerErrors.name ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
                 }`}
                 placeholder="Enter your full name"
               />
             </div>
-            {errors.name && (
+            {registerErrors.name && (
               <div className="flex items-center mt-1 text-red-600 text-sm">
                 <AlertCircle className="w-4 h-4 mr-1" />
-                {errors.name}
+                {registerErrors.name}
               </div>
             )}
           </div>
@@ -188,18 +188,18 @@ export default function Register() {
                 type="email"
                 id="email"
                 name="email"
-                value={formData.email}
-                onChange={handleChange}
+                value={registerFormData.email}
+                onChange={handleRegisterChange}
                 className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                  errors.email ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+                  registerErrors.email ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
                 }`}
                 placeholder="Enter your email"
               />
             </div>
-            {errors.email && (
+            {registerErrors.email && (
               <div className="flex items-center mt-1 text-red-600 text-sm">
                 <AlertCircle className="w-4 h-4 mr-1" />
-                {errors.email}
+                {registerErrors.email}
               </div>
             )}
           </div>
@@ -215,10 +215,10 @@ export default function Register() {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
-                value={formData.password}
-                onChange={handleChange}
+                value={registerFormData.password}
+                onChange={handleRegisterChange}
                 className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                  errors.password ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+                  registerErrors.password ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
                 }`}
                 placeholder="Create a password"
               />
@@ -230,10 +230,10 @@ export default function Register() {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-            {errors.password && (
+            {registerErrors.password && (
               <div className="flex items-center mt-1 text-red-600 text-sm">
                 <AlertCircle className="w-4 h-4 mr-1" />
-                {errors.password}
+                {registerErrors.password}
               </div>
             )}
           </div>
@@ -249,10 +249,10 @@ export default function Register() {
                 type={showConfirmPassword ? "text" : "password"}
                 id="confirmPassword"
                 name="confirmPassword"
-                value={formData.confirmPassword}
-                onChange={handleChange}
+                value={registerFormData.confirmPassword}
+                onChange={handleRegisterChange}
                 className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 ${
-                  errors.confirmPassword ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+                  registerErrors.confirmPassword ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
                 }`}
                 placeholder="Confirm your password"
               />
@@ -264,26 +264,26 @@ export default function Register() {
                 {showConfirmPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-            {errors.confirmPassword && (
+            {registerErrors.confirmPassword && (
               <div className="flex items-center mt-1 text-red-600 text-sm">
                 <AlertCircle className="w-4 h-4 mr-1" />
-                {errors.confirmPassword}
+                {registerErrors.confirmPassword}
               </div>
             )}
           </div>
 
           {/* Submit Button */}
           <button
-            onClick={handleSubmit}
+            onClick={handleRegisterSubmit}
             type="submit"
-            disabled={isSubmitting}
+            disabled={registerIsSubmitting}
             className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all duration-200 ${
-              isSubmitting
+              registerIsSubmitting
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-blue-600 hover:bg-blue-700 hover:shadow-lg transform hover:scale-105"
             }`}
           >
-            {isSubmitting ? (
+            {registerIsSubmitting ? (
               <div className="flex items-center justify-center">
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                 Creating Account...

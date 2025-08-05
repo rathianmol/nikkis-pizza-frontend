@@ -27,12 +27,63 @@ function AuthProvider({children}) {
     const [registerIsSubmitting, setRegisterIsSubmitting] = useState(false);
     const [registerSubmitSuccess, setRegisterSubmitSuccess] = useState(false);
 
+
+    const handleRegisterChange = (e) => {
+    const { name, value } = e.target;
+    setRegisterFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
+    
+    // Clear error when user starts typing
+    if (registerErrors[name]) {
+      setRegisterErrors(prev => ({ ...prev, [name]: "" }));
+    }
+  };
+
+      const validateRegisterForm = () => {
+    const newErrors = {};
+
+    // Name validation
+    if (!registerFormData.name.trim()) {
+      newErrors.name = "Name is required";
+    } else if (registerFormData.name.trim().length < 2) {
+      newErrors.name = "Name must be at least 2 characters";
+    }
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!registerFormData.email) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(registerFormData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Password validation
+    if (!registerFormData.password) {
+      newErrors.password = "Password is required";
+    } else if (registerFormData.password.length < 6) {
+      newErrors.password = "Password must be at least 6 characters";
+    }
+
+    // Confirm password validation
+    if (!registerFormData.confirmPassword) {
+      newErrors.confirmPassword = "Please confirm your password";
+    } else if (registerFormData.password !== registerFormData.confirmPassword) {
+      newErrors.confirmPassword = "Passwords do not match";
+    }
+
+    setRegisterErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+
     const handleRegisterSubmit = async (e) => {
         e.preventDefault();
         
-        if (!validateForm()) return;
+        if (!validateRegisterForm()) return;
 
-        setIsSubmitting(true); // ??
+        setRegisterIsSubmitting(true); // ??
         
         // Simulate API call
         try {
