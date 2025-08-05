@@ -1,117 +1,119 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Eye, EyeOff, Mail, Lock, CheckCircle, AlertCircle } from "lucide-react";
 import { AuthContext } from '../contexts/AuthContext';
 
 function Login() {
-  const [formData, setFormData] = useState({
-    email: "",
-    password: ""
-  });
+//   const [formData, setFormData] = useState({
+//     email: "",
+//     password: ""
+//   });
   
   const [showPassword, setShowPassword] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [loginSuccess, setLoginSuccess] = useState(false);
+//   const [errors, setErrors] = useState({});
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [loginSuccess, setLoginSuccess] = useState(false);
 
   // Auth context
-  const {user, setUser} = useContext(AuthContext);
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+//   const {user, setUser} = useContext(AuthContext);
+const {loginFormData, setLoginFormData, loginErrors, setLoginErrors, loginIsSubmitting, setLoginIsSubmitting, loginSuccess, setLoginSuccess, handleLoginChange, validateLoginForm, handleLoginSubmit} = useContext(AuthContext);
+  
+// const handleChange = (e) => {
+//     const { name, value } = e.target;
+//     setFormData(prev => ({
+//       ...prev,
+//       [name]: value
+//     }));
     
-    // Clear error when user starts typing
-    if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: "" }));
-    }
-  };
+//     // Clear error when user starts typing
+//     if (errors[name]) {
+//       setErrors(prev => ({ ...prev, [name]: "" }));
+//     }
+//   };
 
-  const validateForm = () => {
-    const newErrors = {};
+//   const validateForm = () => {
+//     const newErrors = {};
 
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!formData.email) {
-      newErrors.email = "Email is required";
-    } else if (!emailRegex.test(formData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
+//     // Email validation
+//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+//     if (!formData.email) {
+//       newErrors.email = "Email is required";
+//     } else if (!emailRegex.test(formData.email)) {
+//       newErrors.email = "Please enter a valid email address";
+//     }
 
-    // Password validation
-    if (!formData.password) {
-      newErrors.password = "Password is required";
-    }
+//     // Password validation
+//     if (!formData.password) {
+//       newErrors.password = "Password is required";
+//     }
 
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
+//     setErrors(newErrors);
+//     return Object.keys(newErrors).length === 0;
+//   };
 
-  const handleSubmit = async () => {
-    if (!validateForm()) return;
+//   const handleSubmit = async () => {
+//     if (!validateForm()) return;
 
-    setIsSubmitting(true);
+//     setIsSubmitting(true);
     
-    try {
-      const response = await fetch('http://localhost:8000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
+//     try {
+//       const response = await fetch('http://localhost:8000/api/login', {
+//         method: 'POST',
+//         headers: {
+//           'Content-Type': 'application/json',
+//           'Accept': 'application/json',
+//         },
+//         body: JSON.stringify({
+//           email: formData.email,
+//           password: formData.password,
+//         }),
+//       });
 
-      const data = await response.json();
+//       const data = await response.json();
 
-      if (response.ok) {
-        // Login successful
-        console.log("Login successful:", data);
+//       if (response.ok) {
+//         // Login successful
+//         console.log("Login successful:", data);
         
-        // Store token if provided
-        if (data.token) {
-          localStorage.setItem('auth_token', data.token);
-        }
+//         // Store token if provided
+//         if (data.token) {
+//           localStorage.setItem('auth_token', data.token);
+//         }
         
-        setLoginSuccess(true);
+//         setLoginSuccess(true);
         
-        // Reset form after success
-        setTimeout(() => {
-          setFormData({
-            email: "",
-            password: ""
-          });
-          setLoginSuccess(false);
-          // Here you would typically redirect to dashboard
-          // window.location.href = '/dashboard';
-        }, 2000);
+//         // Reset form after success
+//         setTimeout(() => {
+//           setFormData({
+//             email: "",
+//             password: ""
+//           });
+//           setLoginSuccess(false);
+//           // Here you would typically redirect to dashboard
+//           // window.location.href = '/dashboard';
+//         }, 2000);
         
-      } else {
-        // Handle validation errors from Laravel
-        if (data.errors) {
-          setErrors(data.errors);
-        } else {
-          // Handle other errors
-          setErrors({ general: data.message || 'Login failed. Please check your credentials.' });
-        }
-      }
+//       } else {
+//         // Handle validation errors from Laravel
+//         if (data.errors) {
+//           setErrors(data.errors);
+//         } else {
+//           // Handle other errors
+//           setErrors({ general: data.message || 'Login failed. Please check your credentials.' });
+//         }
+//       }
       
-    } catch (error) {
-      console.error("Login failed:", error);
-      setErrors({ general: 'Network error. Please check your connection and try again.' });
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
+//     } catch (error) {
+//       console.error("Login failed:", error);
+//       setErrors({ general: 'Network error. Please check your connection and try again.' });
+//     } finally {
+//       setIsSubmitting(false);
+//     }
+//   };
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleSubmit();
+    //   handleSubmit();
+    handleLoginSubmit();
     }
   };
 
@@ -137,11 +139,11 @@ function Login() {
 
         <div className="space-y-6">
           {/* General Error Message */}
-          {errors.general && (
+          {loginErrors.general && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
               <div className="flex items-center text-red-600">
                 <AlertCircle className="w-5 h-5 mr-2" />
-                <span className="text-sm font-medium">{errors.general}</span>
+                <span className="text-sm font-medium">{loginErrors.general}</span>
               </div>
             </div>
           )}
@@ -157,20 +159,22 @@ function Login() {
                 type="email"
                 id="email"
                 name="email"
-                value={formData.email}
-                onChange={handleChange}
+                // value={formData.email}
+                value={loginFormData.email}
+                // onChange={handleChange}
+                onChange={handleLoginChange}
                 onKeyPress={handleKeyPress}
                 className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
-                  errors.email ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+                  loginErrors.email ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
                 }`}
                 placeholder="Enter your email"
                 autoComplete="email"
               />
             </div>
-            {errors.email && (
+            {loginErrors.email && (
               <div className="flex items-center mt-1 text-red-600 text-sm">
                 <AlertCircle className="w-4 h-4 mr-1" />
-                {errors.email}
+                {loginErrors.email}
               </div>
             )}
           </div>
@@ -186,11 +190,13 @@ function Login() {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
-                value={formData.password}
-                onChange={handleChange}
+                // value={formData.password}
+                value={loginFormData.password}
+                // onChange={handleChange}
+                onChange={handleLoginChange}
                 onKeyPress={handleKeyPress}
                 className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
-                  errors.password ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+                  loginErrors.password ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
                 }`}
                 placeholder="Enter your password"
                 autoComplete="current-password"
@@ -203,10 +209,10 @@ function Login() {
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-            {errors.password && (
+            {loginErrors.password && (
               <div className="flex items-center mt-1 text-red-600 text-sm">
                 <AlertCircle className="w-4 h-4 mr-1" />
-                {errors.password}
+                {loginErrors.password}
               </div>
             )}
           </div>
@@ -220,15 +226,17 @@ function Login() {
 
           {/* Submit Button */}
           <button
-            onClick={handleSubmit}
-            disabled={isSubmitting}
+            // onClick={handleSubmit}
+            onClick={handleLoginSubmit}
+            // disabled={isSubmitting}
+            disabled={loginIsSubmitting}
             className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all duration-200 ${
-              isSubmitting
+              loginIsSubmitting //isSubmitting
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg transform hover:scale-105"
             }`}
           >
-            {isSubmitting ? (
+            {loginIsSubmitting ? ( //loginIsSubmitting
               <div className="flex items-center justify-center">
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                 Signing In...

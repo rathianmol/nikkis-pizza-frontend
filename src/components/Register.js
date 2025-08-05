@@ -3,18 +3,18 @@ import { Eye, EyeOff, User, Mail, Lock, CheckCircle, AlertCircle } from "lucide-
 import { AuthContext } from '../contexts/AuthContext';
 
 export default function Register() {
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-    password: "",
-    confirmPassword: ""
-  });
+//   const [formData, setFormData] = useState({
+//     name: "",
+//     email: "",
+//     password: "",
+//     confirmPassword: ""
+//   });
   
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [errors, setErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [submitSuccess, setSubmitSuccess] = useState(false);
+//   const [errors, setErrors] = useState({});
+//   const [isSubmitting, setIsSubmitting] = useState(false);
+//   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   // Auth context
   const {user, setUser} = useContext(AuthContext);
