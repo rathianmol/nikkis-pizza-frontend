@@ -1,8 +1,10 @@
 import { useState, useContext } from "react";
 import { Eye, EyeOff, User, Mail, Lock, CheckCircle, AlertCircle } from "lucide-react";
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function Register() {
+    const { register } = useAuth();
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -72,58 +74,31 @@ export default function Register() {
 
     setIsSubmitting(true);
     
-    // Simulate API call
-    try {
-      const response = await fetch('http://localhost:8000/api/register', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          // Add CSRF token if needed
-          // 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-        },
-        body: JSON.stringify({
-          name: formData.name,
-          email: formData.email,
-          password: formData.password,
-          password_confirmation: formData.confirmPassword, // Laravel expects this field name
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Registration successful
-        console.log("Registration successful:", data);
-        setSubmitSuccess(true);
-        
-        // Reset form after success
-        setTimeout(() => {
-          setFormData({
-            name: "",
-            email: "",
-            password: "",
-            confirmPassword: ""
-          });
-          setSubmitSuccess(false);
-        }, 3000);
-        
-      } else {
-        // Handle validation errors from Laravel
-        if (data.errors) {
-          setErrors(data.errors);
-        } else {
-          // Handle other errors
-          setErrors({ general: data.message || 'Registration failed. Please try again.' });
-        }
-      }
+    // Use the register method from auth context
+    const result = await register(formData);
+    
+    if (result.success) {
+      console.log("Registration successful:", result.data);
+      setSubmitSuccess(true);
       
-    } catch (error) {
-      console.error("Registration failed:", error);
-      setErrors({ general: 'Network error. Please check your connection and try again.' });
-    } finally {
-      setIsSubmitting(false);
+      // Reset form after success
+      setTimeout(() => {
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: ""
+        });
+        setSubmitSuccess(false);
+        // Optionally redirect to dashboard since user is now logged in
+        // navigate('/dashboard');
+      }, 3000);
+    } else {
+      // Handle errors returned from auth context
+      setErrors(result.errors);
     }
+    
+    setIsSubmitting(false);
   };
 
   if (submitSuccess) {

@@ -1,268 +1,139 @@
-import {createContext, useState} from 'react';
+import { createContext, useContext, useState} from 'react';
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
-function AuthProvider({children}) {
-    // const[user, setuser] = useState(null);
+// Custom hook to use auth context
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
+};
 
-    // const isAuthenticated = () => {
-    //     if(user!=null) return true;
-    //     else return false;
-    // }
+export function AuthProvider({ children }) {
+  const [user, setUser] = useState(null);
+  const [token, setToken] = useState(localStorage.getItem('auth_token'));
 
+  const register = async (userData) => {
+    try {
+      const response = await fetch('http://localhost:8000/api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          name: userData.name,
+          email: userData.email,
+          password: userData.password,
+          password_confirmation: userData.confirmPassword,
+        }),
+      });
 
-    /**
-     * Start: Register Component Auth handling.
-     */
-    const [registerFormData, setRegisterFormData] = useState({
-        name: "",
-        email: "",
-        password: "",
-        confirmPassword: ""
-    });
+      const data = await response.json();
 
-    // const [registerShowPassword, setRegisterShowPassword] = useState(false);
-    // const [registerShowConfirmPassword, setRegisterShowConfirmPassword] = useState(false);
-    const [registerErrors, setRegisterErrors] = useState({});
-    const [registerIsSubmitting, setRegisterIsSubmitting] = useState(false);
-    const [registerSubmitSuccess, setRegisterSubmitSuccess] = useState(false);
+      if (response.ok) {
+        // Store token and user data from your API response structure
+        localStorage.setItem('auth_token', data.token);
+        setToken(data.token);
+        setUser(data.user); // This contains the full user object with roles
+        
+        return { 
+          success: true, 
+          data: {
+            message: data.message,
+            user: data.user,
+            role: data.role
+          }
+        };
+      } else {
+        return { 
+          success: false, 
+          errors: data.errors || { general: data.message || 'Registration failed' }
+        };
+      }
+    } catch (error) {
+      console.error('Registration failed:', error);
+      return { 
+        success: false, 
+        errors: { general: 'Network error. Please check your connection.' } 
+      };
+    }
+  };
 
+  const login = async (credentials) => {
+    try {
+      const response = await fetch('http://localhost:8000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify(credentials),
+      });
 
-    const handleRegisterChange = (e) => {
-    const { name, value } = e.target;
-    setRegisterFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
+      const data = await response.json();
+
+      if (response.ok) {
+        // Store token and user data
+        localStorage.setItem('auth_token', data.token);
+        setToken(data.token);
+        setUser(data.user);
+        
+        return { success: true, data };
+      } else {
+        return { 
+          success: false, 
+          errors: data.errors || { general: data.message || 'Login failed' }
+        };
+      }
+    } catch (error) {
+      console.error('Login failed:', error);
+      return { 
+        success: false, 
+        errors: { general: 'Network error. Please check your connection.' } 
+      };
+    }
+  };
+
+  const logout = () => {
+    localStorage.removeItem('auth_token');
+    setToken(null);
+    setUser(null);
+  };
+
+  // Helper function to get user role
+  const getUserRole = () => {
+    if (!user || !user.roles || user.roles.length === 0) return null;
+    return user.roles[0].name; // Assuming user has one primary role
+  };
+
+  // Helper function to check if user has specific role
+  const hasRole = (roleName) => {
+    if (!user || !user.roles) return false;
+    return user.roles.some(role => role.name === roleName);
+  };
+
+  const value = {
+    // State
+    user,
+    token,
+    isAuthenticated: !!token && !!user,
     
-    // Clear error when user starts typing
-    if (registerErrors[name]) {
-      setRegisterErrors(prev => ({ ...prev, [name]: "" }));
-    }
-  };
-
-      const validateRegisterForm = () => {
-    const newErrors = {};
-
-    // Name validation
-    if (!registerFormData.name.trim()) {
-      newErrors.name = "Name is required";
-    } else if (registerFormData.name.trim().length < 2) {
-      newErrors.name = "Name must be at least 2 characters";
-    }
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!registerFormData.email) {
-      newErrors.email = "Email is required";
-    } else if (!emailRegex.test(registerFormData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    // Password validation
-    if (!registerFormData.password) {
-      newErrors.password = "Password is required";
-    } else if (registerFormData.password.length < 6) {
-      newErrors.password = "Password must be at least 6 characters";
-    }
-
-    // Confirm password validation
-    if (!registerFormData.confirmPassword) {
-      newErrors.confirmPassword = "Please confirm your password";
-    } else if (registerFormData.password !== registerFormData.confirmPassword) {
-      newErrors.confirmPassword = "Passwords do not match";
-    }
-
-    setRegisterErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-
-    const handleRegisterSubmit = async (e) => {
-        e.preventDefault();
-        
-        if (!validateRegisterForm()) return;
-
-        setRegisterIsSubmitting(true); // ??
-        
-        // Simulate API call
-        try {
-        const response = await fetch('http://localhost:8000/api/register', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            // Add CSRF token if needed
-            // 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]')?.getAttribute('content'),
-            },
-            body: JSON.stringify({
-            name: registerFormData.name,
-            email: registerFormData.email,
-            password: registerFormData.password,
-            password_confirmation: registerFormData.confirmPassword, // Laravel expects this field name
-            }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            // Registration successful
-            console.log("Registration successful:", data);
-            setRegisterSubmitSuccess(true); // ??
-            
-            // Reset form after success
-            setTimeout(() => {
-            setRegisterFormData({
-                name: "",
-                email: "",
-                password: "",
-                confirmPassword: ""
-            });
-            setRegisterSubmitSuccess(false);
-            }, 3000);
-            
-        } else {
-            // Handle validation errors from Laravel
-            if (data.errors) {
-            setRegisterErrors(data.errors);
-            } else {
-            // Handle other errors
-            setRegisterErrors({ general: data.message || 'Registration failed. Please try again.' });
-            }
-        }
-        
-        } catch (error) {
-        console.error("Registration failed:", error);
-        setRegisterErrors({ general: 'Network error. Please check your connection and try again.' });
-        } finally {
-        setRegisterIsSubmitting(false);
-        }
-    };
-    /**
-     * End: Register Component Auth handling.
-     */
-
-    // *********************************************************************
+    // Methods
+    login,
+    register,
+    logout,
     
-    /**
-     * Start: Login Component Auth handling.
-     */
-    const [loginFormData, setLoginFormData] = useState({
-        email: "",
-        password: "",
-    });
-
-    // const [loginShowPassword, setLoginShowPassword] = useState(false);
-    const [loginErrors, setLoginErrors] = useState({});
-    const [loginIsSubmitting, setLoginIsSubmitting] = useState(false);
-    const [loginSuccess, setLoginSuccess] = useState(false);
-
-  const handleLoginChange = (e) => {
-    const { name, value } = e.target;
-    setLoginFormData(prev => ({
-      ...prev,
-      [name]: value
-    }));
-    
-    // Clear error when user starts typing
-    if (loginErrors[name]) {
-      setLoginErrors(prev => ({ ...prev, [name]: "" }));
-    }
+    // Helper methods
+    getUserRole,
+    hasRole,
   };
 
-    const validateLoginForm = () => {
-    const newErrors = {};
-
-    // Email validation
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!loginFormData.email) {
-      newErrors.email = "Email is required";
-    } else if (!emailRegex.test(loginFormData.email)) {
-      newErrors.email = "Please enter a valid email address";
-    }
-
-    // Password validation
-    if (!loginFormData.password) {
-      newErrors.password = "Password is required";
-    }
-
-    setLoginErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-    const handleLoginSubmit = async (e) => {
-        e.preventDefault();
-        if (!validateLoginForm()) return;
-
-        setLoginIsSubmitting(true);
-        
-        try {
-        const response = await fetch('http://localhost:8000/api/login', {
-            method: 'POST',
-            headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            },
-            body: JSON.stringify({
-            email: loginFormData.email,
-            password: loginFormData.password,
-            }),
-        });
-
-        const data = await response.json();
-
-        if (response.ok) {
-            // Login successful
-            console.log("Login successful:", data);
-            
-            // Store token if provided
-            if (data.token) {
-            localStorage.setItem('auth_token', data.token);
-            }
-            
-            setLoginSuccess(true);
-            
-            // Reset form after success
-            setTimeout(() => {
-            setLoginFormData({
-                email: "",
-                password: ""
-            });
-            setLoginSuccess(false);
-            // Here you would typically redirect to dashboard
-            // window.location.href = '/dashboard';
-            }, 2000);
-            
-        } else {
-            // Handle validation errors from Laravel
-            if (data.errors) {
-            setLoginErrors(data.errors);
-            } else {
-            // Handle other errors
-            setLoginErrors({ general: data.message || 'Login failed. Please check your credentials.' });
-            }
-        }
-        
-        } catch (error) {
-        console.error("Login failed:", error);
-        setLoginErrors({ general: 'Network error. Please check your connection and try again.' });
-        } finally {
-        setLoginIsSubmitting(false);
-        }
-    };
-    /**
-     * End: Login Component Auth handling.
-     */
-    return (
-        <AuthContext.Provider
-            // value={{user, setUser}}
-            value={{loginFormData, setLoginFormData, loginErrors, setLoginErrors, loginIsSubmitting, setLoginIsSubmitting, loginSuccess, setLoginSuccess, handleLoginChange, validateLoginForm, handleLoginSubmit,
-                    registerFormData, setRegisterFormData, registerErrors, setRegisterErrors, registerIsSubmitting, setRegisterIsSubmitting, registerSubmitSuccess, setRegisterSubmitSuccess
-            }}
-        >
-            {children}
-        </AuthContext.Provider>
-    )
+  return (
+    <AuthContext.Provider value={value}>
+      {children}
+    </AuthContext.Provider>
+  );
 }
-
-export {AuthProvider};

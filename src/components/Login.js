@@ -1,8 +1,11 @@
 import { useState, useContext } from "react";
 import { Eye, EyeOff, Mail, Lock, CheckCircle, AlertCircle } from "lucide-react";
-import { AuthContext } from '../contexts/AuthContext';
+import { useAuth } from '../contexts/AuthContext';
 
 function Login() {
+
+    const { login } = useAuth();
+
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -11,7 +14,7 @@ function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [success, setSuccess] = useState(false);
+  const [submitSuccess, setSubmitSuccess] = useState(false);
 
 const handleChange = (e) => {
     const { name, value } = e.target;
@@ -46,64 +49,36 @@ const handleChange = (e) => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const handleSubmit = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
     if (!validateForm()) return;
 
     setIsSubmitting(true);
     
-    try {
-      const response = await fetch('http://localhost:8000/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-        },
-        body: JSON.stringify({
-          email: formData.email,
-          password: formData.password,
-        }),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        // Login successful
-        console.log("Login successful:", data);
-        
-        // Store token if provided
-        if (data.token) {
-          localStorage.setItem('auth_token', data.token);
-        }
-        
-        setSuccess(true);
-        
-        // Reset form after success
-        setTimeout(() => {
-          setFormData({
-            email: "",
-            password: ""
-          });
-          setSuccess(false);
-          // Here you would typically redirect to dashboard
-          // window.location.href = '/dashboard';
-        }, 2000);
-        
-      } else {
-        // Handle validation errors from Laravel
-        if (data.errors) {
-          setErrors(data.errors);
-        } else {
-          // Handle other errors
-          setErrors({ general: data.message || 'Login failed. Please check your credentials.' });
-        }
-      }
+    // Use the register method from auth context
+    const result = await login(formData);
+    
+    if (result.success) {
+      console.log("Login successful:", result.data);
+      setSubmitSuccess(true);
       
-    } catch (error) {
-      console.error("Login failed:", error);
-      setErrors({ general: 'Network error. Please check your connection and try again.' });
-    } finally {
-      setIsSubmitting(false);
+      // Reset form after success
+      setTimeout(() => {
+        setFormData({
+          email: "",
+          password: "",
+        });
+        setSubmitSuccess(false);
+        // Optionally redirect to dashboard since user is now logged in
+        // navigate('/dashboard');
+      }, 3000);
+    } else {
+      // Handle errors returned from auth context
+      setErrors(result.errors);
     }
+    
+    setIsSubmitting(false);
   };
 
   const handleKeyPress = (e) => {
@@ -112,7 +87,7 @@ const handleChange = (e) => {
     }
   };
 
-  if (success) {
+  if (submitSuccess) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
