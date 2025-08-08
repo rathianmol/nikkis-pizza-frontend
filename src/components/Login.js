@@ -3,121 +3,116 @@ import { Eye, EyeOff, Mail, Lock, CheckCircle, AlertCircle } from "lucide-react"
 import { AuthContext } from '../contexts/AuthContext';
 
 function Login() {
-//   const [formData, setFormData] = useState({
-//     email: "",
-//     password: ""
-//   });
+  const [formData, setFormData] = useState({
+    email: "",
+    password: ""
+  });
   
   const [showPassword, setShowPassword] = useState(false);
-//   const [errors, setErrors] = useState({});
-//   const [isSubmitting, setIsSubmitting] = useState(false);
-//   const [loginSuccess, setLoginSuccess] = useState(false);
+  const [errors, setErrors] = useState({});
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [success, setSuccess] = useState(false);
 
-  // Auth context
-//   const {user, setUser} = useContext(AuthContext);
-const {loginFormData, setLoginFormData, loginErrors, setLoginErrors, loginIsSubmitting, setLoginIsSubmitting, loginSuccess, setLoginSuccess, handleLoginChange, validateLoginForm, handleLoginSubmit} = useContext(AuthContext);
-  
-// const handleChange = (e) => {
-//     const { name, value } = e.target;
-//     setFormData(prev => ({
-//       ...prev,
-//       [name]: value
-//     }));
+const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
     
-//     // Clear error when user starts typing
-//     if (errors[name]) {
-//       setErrors(prev => ({ ...prev, [name]: "" }));
-//     }
-//   };
-
-//   const validateForm = () => {
-//     const newErrors = {};
-
-//     // Email validation
-//     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-//     if (!formData.email) {
-//       newErrors.email = "Email is required";
-//     } else if (!emailRegex.test(formData.email)) {
-//       newErrors.email = "Please enter a valid email address";
-//     }
-
-//     // Password validation
-//     if (!formData.password) {
-//       newErrors.password = "Password is required";
-//     }
-
-//     setErrors(newErrors);
-//     return Object.keys(newErrors).length === 0;
-//   };
-
-//   const handleSubmit = async () => {
-//     if (!validateForm()) return;
-
-//     setIsSubmitting(true);
-    
-//     try {
-//       const response = await fetch('http://localhost:8000/api/login', {
-//         method: 'POST',
-//         headers: {
-//           'Content-Type': 'application/json',
-//           'Accept': 'application/json',
-//         },
-//         body: JSON.stringify({
-//           email: formData.email,
-//           password: formData.password,
-//         }),
-//       });
-
-//       const data = await response.json();
-
-//       if (response.ok) {
-//         // Login successful
-//         console.log("Login successful:", data);
-        
-//         // Store token if provided
-//         if (data.token) {
-//           localStorage.setItem('auth_token', data.token);
-//         }
-        
-//         setLoginSuccess(true);
-        
-//         // Reset form after success
-//         setTimeout(() => {
-//           setFormData({
-//             email: "",
-//             password: ""
-//           });
-//           setLoginSuccess(false);
-//           // Here you would typically redirect to dashboard
-//           // window.location.href = '/dashboard';
-//         }, 2000);
-        
-//       } else {
-//         // Handle validation errors from Laravel
-//         if (data.errors) {
-//           setErrors(data.errors);
-//         } else {
-//           // Handle other errors
-//           setErrors({ general: data.message || 'Login failed. Please check your credentials.' });
-//         }
-//       }
-      
-//     } catch (error) {
-//       console.error("Login failed:", error);
-//       setErrors({ general: 'Network error. Please check your connection and try again.' });
-//     } finally {
-//       setIsSubmitting(false);
-//     }
-//   };
-
-  const handleKeyPress = (e) => {
-    if (e.key === 'Enter') {
-    //   handleSubmit();
-    handleLoginSubmit();
+    // Clear error when user starts typing
+    if (errors[name]) {
+      setErrors(prev => ({ ...prev, [name]: "" }));
     }
   };
 
-  if (loginSuccess) {
+  const validateForm = () => {
+    const newErrors = {};
+
+    // Email validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!formData.email) {
+      newErrors.email = "Email is required";
+    } else if (!emailRegex.test(formData.email)) {
+      newErrors.email = "Please enter a valid email address";
+    }
+
+    // Password validation
+    if (!formData.password) {
+      newErrors.password = "Password is required";
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async () => {
+    if (!validateForm()) return;
+
+    setIsSubmitting(true);
+    
+    try {
+      const response = await fetch('http://localhost:8000/api/login', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({
+          email: formData.email,
+          password: formData.password,
+        }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Login successful
+        console.log("Login successful:", data);
+        
+        // Store token if provided
+        if (data.token) {
+          localStorage.setItem('auth_token', data.token);
+        }
+        
+        setSuccess(true);
+        
+        // Reset form after success
+        setTimeout(() => {
+          setFormData({
+            email: "",
+            password: ""
+          });
+          setSuccess(false);
+          // Here you would typically redirect to dashboard
+          // window.location.href = '/dashboard';
+        }, 2000);
+        
+      } else {
+        // Handle validation errors from Laravel
+        if (data.errors) {
+          setErrors(data.errors);
+        } else {
+          // Handle other errors
+          setErrors({ general: data.message || 'Login failed. Please check your credentials.' });
+        }
+      }
+      
+    } catch (error) {
+      console.error("Login failed:", error);
+      setErrors({ general: 'Network error. Please check your connection and try again.' });
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === 'Enter') {
+      handleSubmit();
+    }
+  };
+
+  if (success) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
         <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
@@ -139,11 +134,11 @@ const {loginFormData, setLoginFormData, loginErrors, setLoginErrors, loginIsSubm
 
         <div className="space-y-6">
           {/* General Error Message */}
-          {loginErrors.general && (
+          {errors.general && (
             <div className="bg-red-50 border border-red-200 rounded-lg p-4 mb-6">
               <div className="flex items-center text-red-600">
                 <AlertCircle className="w-5 h-5 mr-2" />
-                <span className="text-sm font-medium">{loginErrors.general}</span>
+                <span className="text-sm font-medium">{errors.general}</span>
               </div>
             </div>
           )}
@@ -159,22 +154,20 @@ const {loginFormData, setLoginFormData, loginErrors, setLoginErrors, loginIsSubm
                 type="email"
                 id="email"
                 name="email"
-                // value={formData.email}
-                value={loginFormData.email}
-                // onChange={handleChange}
-                onChange={handleLoginChange}
+                value={formData.email}
+                onChange={handleChange}
                 onKeyPress={handleKeyPress}
                 className={`w-full pl-10 pr-4 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
-                  loginErrors.email ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+                  errors.email ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
                 }`}
                 placeholder="Enter your email"
                 autoComplete="email"
               />
             </div>
-            {loginErrors.email && (
+            {errors.email && (
               <div className="flex items-center mt-1 text-red-600 text-sm">
                 <AlertCircle className="w-4 h-4 mr-1" />
-                {loginErrors.email}
+                {errors.email}
               </div>
             )}
           </div>
@@ -191,12 +184,12 @@ const {loginFormData, setLoginFormData, loginErrors, setLoginErrors, loginIsSubm
                 id="password"
                 name="password"
                 // value={formData.password}
-                value={loginFormData.password}
+                value={formData.password}
                 // onChange={handleChange}
-                onChange={handleLoginChange}
+                onChange={handleChange}
                 onKeyPress={handleKeyPress}
                 className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
-                  loginErrors.password ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
+                  errors.password ? "border-red-500 bg-red-50" : "border-gray-300 hover:border-gray-400"
                 }`}
                 placeholder="Enter your password"
                 autoComplete="current-password"
@@ -209,10 +202,10 @@ const {loginFormData, setLoginFormData, loginErrors, setLoginErrors, loginIsSubm
                 {showPassword ? <EyeOff className="h-5 w-5" /> : <Eye className="h-5 w-5" />}
               </button>
             </div>
-            {loginErrors.password && (
+            {errors.password && (
               <div className="flex items-center mt-1 text-red-600 text-sm">
                 <AlertCircle className="w-4 h-4 mr-1" />
-                {loginErrors.password}
+                {errors.password}
               </div>
             )}
           </div>
@@ -227,16 +220,16 @@ const {loginFormData, setLoginFormData, loginErrors, setLoginErrors, loginIsSubm
           {/* Submit Button */}
           <button
             // onClick={handleSubmit}
-            onClick={handleLoginSubmit}
+            onClick={handleSubmit}
             // disabled={isSubmitting}
-            disabled={loginIsSubmitting}
+            disabled={isSubmitting}
             className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all duration-200 ${
-              loginIsSubmitting //isSubmitting
+              isSubmitting
                 ? "bg-gray-400 cursor-not-allowed"
                 : "bg-indigo-600 hover:bg-indigo-700 hover:shadow-lg transform hover:scale-105"
             }`}
           >
-            {loginIsSubmitting ? ( //loginIsSubmitting
+            {isSubmitting ? (
               <div className="flex items-center justify-center">
                 <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin mr-2"></div>
                 Signing In...
