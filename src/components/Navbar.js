@@ -9,7 +9,7 @@ function Navbar() {
       <Link to="/about">About</Link>
       {!isAuthenticated && <Link to="/login">Login</Link>}
       <Link to="/order">Order</Link>
-      <Link to="/register">Register</Link>
+      {!isAuthenticated && <Link to="/register">Register</Link>}
       {isAuthenticated && <Logout />}
     </nav>
   );
