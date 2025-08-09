@@ -83,7 +83,7 @@ const handleChange = (e) => {
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
-      handleSubmit();
+      handleSubmit(e);
     }
   };
 
