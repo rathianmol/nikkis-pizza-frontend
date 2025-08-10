@@ -11,6 +11,7 @@ function Navbar() {
       <Link to="/order">Order</Link>
       {!isAuthenticated && <Link to="/register">Register</Link>}
       {isAuthenticated && <Logout />}
+      <Link to="/cart">Cart</Link>
     </nav>
   );
 }

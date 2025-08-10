@@ -6,6 +6,7 @@ import Menu from './components/Menu';
 import Order from './components/Order';
 import Navbar from './components/Navbar';
 import Register from './components/Register';
+import Cart from './components/Cart';
 
 import { Routes, Route } from 'react-router-dom';
 function App() {
@@ -19,6 +20,7 @@ function App() {
             <Route path="/order" element={<Order />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/cart" element={<Cart />} />
           </Routes>
         </>
 
