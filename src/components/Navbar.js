@@ -8,7 +8,6 @@ function Navbar() {
       <Link to="/">Home</Link>
       <Link to="/pizzas">Pizzas</Link>
       {!isAuthenticated && <Link to="/login">Login</Link>}
-      <Link to="/order">Order</Link>
       {!isAuthenticated && <Link to="/register">Register</Link>}
       {isAuthenticated && <Logout />}
       <Link to="/cart">Cart</Link>
