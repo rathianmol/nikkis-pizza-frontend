@@ -1,6 +1,5 @@
 
 import Home from './components/Home';
-import About from './components/About';
 import Login from './components/Login';
 import Menu from './components/Menu';
 import Order from './components/Order';
@@ -18,7 +17,6 @@ function App() {
             <Route path="/" element={<Home />} />
             <Route path="/pizzas" element={<Pizzas />} />
             <Route path="/menu" element={<Menu />} />
-            <Route path="/about" element={<About />} />
             <Route path="/order" element={<Order />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />

@@ -7,7 +7,6 @@ function Navbar() {
     <nav>
       <Link to="/">Home</Link>
       <Link to="/pizzas">Pizzas</Link>
-      <Link to="/about">About</Link>
       {!isAuthenticated && <Link to="/login">Login</Link>}
       <Link to="/order">Order</Link>
       {!isAuthenticated && <Link to="/register">Register</Link>}
