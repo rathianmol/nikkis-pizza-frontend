@@ -7,6 +7,7 @@ import Order from './components/Order';
 import Navbar from './components/Navbar';
 import Register from './components/Register';
 import Cart from './components/Cart';
+import Pizzas from './components/Pizzas';
 
 import { Routes, Route } from 'react-router-dom';
 function App() {
@@ -15,6 +16,7 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/pizzas" element={<Pizzas />} />
             <Route path="/menu" element={<Menu />} />
             <Route path="/about" element={<About />} />
             <Route path="/order" element={<Order />} />
