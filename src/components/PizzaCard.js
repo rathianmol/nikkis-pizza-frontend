@@ -1,13 +1,25 @@
 import { useState } from "react";
 
-export default function PizzaCard() {
+export default function PizzaCard({ pizza }) {
   const [selectedSize, setSelectedSize] = useState("");
 
-  const sizes = ["Small", "Medium", "Large", "X-Large"];
+  // Safety check to prevent errors if pizza prop is undefined
+  if (!pizza) {
+    return null;
+  }
+
+  const sizes = [
+    { name: "Small", price: pizza.price_small },
+    { name: "Medium", price: pizza.price_medium },
+    { name: "Large", price: pizza.price_large },
+    { name: "X-Large", price: pizza.price_x_large }
+  ];
+
+  const selectedSizeData = sizes.find(size => size.name === selectedSize);
 
   const handleAddToCart = () => {
-    if (selectedSize) {
-      alert(`Added ${selectedSize} Margherita Pizza to cart!`);
+    if (selectedSize && selectedSizeData) {
+      alert(`Added ${selectedSize} ${pizza.title} ($${selectedSizeData.price}) to cart!`);
     }
   };
 
@@ -16,9 +28,12 @@ export default function PizzaCard() {
       {/* Pizza Image */}
       <div className="h-48 bg-gray-200 flex items-center justify-center">
         <img
-          src="https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop"
-          alt="Margherita Pizza"
+          src={`http://localhost:8000/storage/${pizza.image}`}
+          alt={pizza.title}
           className="w-full h-full object-cover"
+          onError={(e) => {
+            e.target.src = "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=400&h=300&fit=crop";
+          }}
         />
       </div>
 
@@ -26,12 +41,12 @@ export default function PizzaCard() {
       <div className="p-6">
         {/* Pizza Title */}
         <h3 className="text-xl font-bold text-gray-900 mb-2">
-          Margherita Pizza
+          {pizza.title}
         </h3>
 
         {/* Pizza Description */}
-        <p className="text-gray-600 text-sm mb-4">
-          Fresh mozzarella, tomato sauce, and basil leaves on our signature hand-tossed dough. A classic Italian favorite that never goes out of style.
+        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+          {pizza.description}
         </p>
 
         {/* Size Options */}
@@ -40,19 +55,29 @@ export default function PizzaCard() {
           <div className="grid grid-cols-2 gap-2">
             {sizes.map((size) => (
               <button
-                key={size}
-                onClick={() => setSelectedSize(size)}
-                className={`px-3 py-2 text-sm rounded-md border transition-colors ${
-                  selectedSize === size
+                key={size.name}
+                onClick={() => setSelectedSize(size.name)}
+                className={`px-3 py-2 text-sm rounded-md border transition-colors flex flex-col items-center ${
+                  selectedSize === size.name
                     ? "bg-blue-500 text-white border-blue-500"
                     : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
                 }`}
               >
-                {size}
+                <span className="font-medium">{size.name}</span>
+                <span className="text-xs opacity-75">${size.price}</span>
               </button>
             ))}
           </div>
         </div>
+
+        {/* Price Display */}
+        {selectedSizeData && (
+          <div className="mb-4 text-center">
+            <span className="text-lg font-bold text-green-600">
+              ${selectedSizeData.price}
+            </span>
+          </div>
+        )}
 
         {/* Add to Cart Button */}
         <button
