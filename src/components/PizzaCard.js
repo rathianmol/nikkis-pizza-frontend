@@ -28,15 +28,12 @@ export default function PizzaCard({ pizza }) {
         const correctIndexFormat = sizes.find(size => size.name === selectedSize)?.indexValue;
 
           const cartItem = {
-            id: `${pizza.id}-${selectedSize}`, // Unique ID for size variants
+            id: `${pizza.id}-${selectedSize}-${Date.now()}`,
             pizzaId: pizza.id, // Original pizza ID
             title: pizza.title,
             image: pizza.image,
-            // description: pizza.description,
             size: selectedSize,
-            // price: pizza[`price_${selectedSize}`], // Get price for selected size
             price: pizza[`price_${correctIndexFormat}`], // Get price for selected size
-            // quantity: 1
         };
 
         console.log("Inside pizza card - dumping the cart item to add to cart: ");

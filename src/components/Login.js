@@ -158,9 +158,7 @@ const handleChange = (e) => {
                 type={showPassword ? "text" : "password"}
                 id="password"
                 name="password"
-                // value={formData.password}
                 value={formData.password}
-                // onChange={handleChange}
                 onChange={handleChange}
                 onKeyPress={handleKeyPress}
                 className={`w-full pl-10 pr-12 py-3 border rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all duration-200 ${
@@ -194,7 +192,6 @@ const handleChange = (e) => {
 
           {/* Submit Button */}
           <button
-            // onClick={handleSubmit}
             onClick={handleSubmit}
             // disabled={isSubmitting}
             disabled={isSubmitting}

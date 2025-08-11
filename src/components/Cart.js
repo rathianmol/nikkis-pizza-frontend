@@ -1,12 +1,8 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-// import { removeFromCart, updateQuantity, clearCart } from '../redux/cartSlice';
 import { removeFromCart } from '../redux/cartSlice';
 
 export default function Cart() {
-//   const cartItems = useSelector(state => state.cart.cart);
-// const cartItems = useSelector(state => state.cart.items);
-// 
 
 const { cartItems, totalPrice, amount } = useSelector((store) => store.cart);
 
@@ -32,10 +28,6 @@ console.log(cartItems);
 
   // Mock user authentication state (replace with actual auth logic)
   const [isUserLoggedIn, setIsUserLoggedIn] = useState(false);
-
-  // Calculate total
-  // const total = cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-  const total = cartItems.reduce((sum, item) => sum + (item.price), 0);
 
   const handleRemoveFromCart = (itemId) => {
     dispatch(removeFromCart(itemId));
@@ -87,7 +79,7 @@ console.log(cartItems);
       items: cartItems,
       contactInfo: isUserLoggedIn ? null : contactInfo,
       paymentInfo,
-      total
+      totalPrice
     });
 
     // alert(`Order placed successfully! Total: $${total.toFixed(2)}`);
@@ -150,18 +142,18 @@ console.log(cartItems);
             <div key={item.id} className="flex items-center justify-between border-b border-gray-200 py-4 last:border-b-0">
               <div className="flex items-center space-x-4">
                 <img
-                //   src={`http://localhost:8000/storage/${item.pizza.image}`}
-                //   alt={item.pizza.title}
+                  src={`http://localhost:8000/storage/${item.image}`}
+                  alt={item.title}
                   className="w-16 h-16 object-cover rounded-md"
                   onError={(e) => {
                     e.target.src = "https://images.unsplash.com/photo-1565299624946-b28f40a0ca4b?w=64&h=64&fit=crop";
                   }}
                 />
                 <div>
-                  {/* <h3 className="font-medium text-gray-900">{item.pizza.title}</h3> */}
+                  <h3 className="font-medium text-gray-900">{item.title}</h3>
                   {/* <p className="text-sm text-gray-600">Size: {item.selectedSize}</p> */}
                   <p className="text-sm text-gray-600">Size: {item.size}</p>
-                  <p className="text-sm text-green-600 font-medium">${item.price}</p>
+                  {/* <p className="text-sm text-green-600 font-medium">${item.price}</p> */}
                 </div>
               </div>
               
@@ -203,7 +195,7 @@ console.log(cartItems);
           
           <div className="mt-6 pt-4 border-t border-gray-200">
             <div className="flex justify-between text-xl font-bold text-gray-900">
-              <span>Total: ${total}</span>
+              <span>Total: ${totalPrice}</span>
             </div>
           </div>
         </div>
@@ -336,19 +328,8 @@ console.log(cartItems);
             type="submit"
             className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg text-lg transition-colors"
           >
-            Place Your Order - ${total}
+            Place Your Order
           </button>
-          
-          {/* Debug toggle for testing (remove in production) */}
-          <div className="mt-4 text-center">
-            <button
-              type="button"
-              onClick={() => setIsUserLoggedIn(!isUserLoggedIn)}
-              className="text-sm text-blue-600 hover:text-blue-800"
-            >
-              {isUserLoggedIn ? 'Simulate Logged Out' : 'Simulate Logged In'}
-            </button>
-          </div>
         </div>
       </form>
     </div>
