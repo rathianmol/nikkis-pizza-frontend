@@ -8,6 +8,7 @@ import Cart from './components/Cart';
 import Pizzas from './components/Pizzas';
 import { Provider } from 'react-redux';
 import store from './redux/store';
+import Footer from './components/Footer';
 
 import { Routes, Route } from 'react-router-dom';
 function App() {
@@ -23,6 +24,8 @@ function App() {
               <Route path="/register" element={<Register />} />
               <Route path="/cart" element={<Cart />} />
             </Routes>
+              <Footer />
+
           </Provider>
         </>
 
