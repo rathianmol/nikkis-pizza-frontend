@@ -1,7 +1,12 @@
 import { Link } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Logout from './Logout';
+import { useSelector } from 'react-redux';
 function Navbar() {
+  // const cartItems = useSelector(state => state.cart.cart)
+  // const cartItems = useSelector(state => state.cart.items)
+  // const cartItems = useSelector(state => state?.cart?.items || []);
+  const { amount } = useSelector((store) => store.cart);
   const { isAuthenticated } = useAuth();
   return (
     <nav>
@@ -10,7 +15,8 @@ function Navbar() {
       {!isAuthenticated && <Link to="/login">Login</Link>}
       {!isAuthenticated && <Link to="/register">Register</Link>}
       {isAuthenticated && <Logout />}
-      <Link to="/cart">Cart</Link>
+      {/* <Link to="/cart">Cart - {cartItems.length}</Link> */}
+      <Link to="/cart">Cart - {amount}</Link>
     </nav>
   );
 }

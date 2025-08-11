@@ -1,25 +1,48 @@
 import { useState } from "react";
+import { useDispatch } from 'react-redux';
+import { addToCart } from "../redux/cartSlice";
 
 export default function PizzaCard({ pizza }) {
   const [selectedSize, setSelectedSize] = useState("");
+  const dispatch = useDispatch();
 
+  console.log('The prop being passed in to the component: ');
+  console.log(pizza);
   // Safety check to prevent errors if pizza prop is undefined
   if (!pizza) {
     return null;
   }
 
   const sizes = [
-    { name: "Small", price: pizza.price_small },
-    { name: "Medium", price: pizza.price_medium },
-    { name: "Large", price: pizza.price_large },
-    { name: "X-Large", price: pizza.price_x_large }
+    { id: 1, name: "Small", price: pizza.price_small, indexValue: "small" },
+    { id: 2, name: "Medium", price: pizza.price_medium, indexValue: "medium" },
+    { id: 3, name: "Large", price: pizza.price_large, indexValue: "large" },
+    { id: 4, name: "X-Large", price: pizza.price_x_large, indexValue: "x_large" }
   ];
 
   const selectedSizeData = sizes.find(size => size.name === selectedSize);
 
   const handleAddToCart = () => {
     if (selectedSize && selectedSizeData) {
-      alert(`Added ${selectedSize} ${pizza.title} ($${selectedSizeData.price}) to cart!`);
+
+        const correctIndexFormat = sizes.find(size => size.name === selectedSize)?.indexValue;
+
+          const cartItem = {
+            id: `${pizza.id}-${selectedSize}`, // Unique ID for size variants
+            pizzaId: pizza.id, // Original pizza ID
+            title: pizza.title,
+            image: pizza.image,
+            // description: pizza.description,
+            size: selectedSize,
+            // price: pizza[`price_${selectedSize}`], // Get price for selected size
+            price: pizza[`price_${correctIndexFormat}`], // Get price for selected size
+            // quantity: 1
+        };
+
+        console.log("Inside pizza card - dumping the cart item to add to cart: ");
+        console.log(cartItem);
+        
+        dispatch(addToCart(cartItem));
     }
   };
 
@@ -82,6 +105,7 @@ export default function PizzaCard({ pizza }) {
         {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
+        //   onClick={() => dispatch(addToCart(pizza))}
           disabled={!selectedSize}
           className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
             selectedSize
