@@ -13,12 +13,17 @@ const cartSlice = createSlice({
         addToCart : (state, action) => {
             state.cartItems.push(action.payload);
             state.amount+=1;
-            state.totalPrice += parseFloat(action.payload.price);
+            state.totalPrice = Math.round((state.totalPrice + parseFloat(action.payload.price)) * 100) / 100;
         },
-        removeFromCart: (state, action) => {
-            state.cartItems = state.cartItems.filter((item) => item.id !== action.payload);
-            state.amount-=1;
-            state.totalPrice -= parseFloat(action.payload.price);
+        removeFromCart: (state, action) => {            
+            const itemToRemove = state.cartItems.find((item) => item.id === action.payload);
+            
+            if (itemToRemove) {
+                // Remove the item
+                state.cartItems = state.cartItems.filter((item) => item.id !== action.payload);
+                state.amount -= 1;
+                state.totalPrice = Math.round((state.totalPrice - parseFloat(itemToRemove.price)) * 100) / 100;
+            }
         }
     }
 })
