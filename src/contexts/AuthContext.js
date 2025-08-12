@@ -1,4 +1,7 @@
 import { createContext, useContext, useState} from 'react';
+import { useNavigate } from 'react-router-dom';
+import { useDispatch } from 'react-redux';
+import { emptyCart } from '../redux/cartSlice';
 
 const AuthContext = createContext();
 
@@ -14,6 +17,8 @@ export const useAuth = () => {
 export function AuthProvider({ children }) {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('auth_token'));
+  const navigate = useNavigate();
+  const dispatch = useDispatch()
 
   const register = async (userData) => {
     try {
@@ -101,6 +106,9 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('auth_token');
     setToken(null);
     setUser(null);
+
+    dispatch(emptyCart());
+    navigate('/');
   };
 
   // Helper function to get user role

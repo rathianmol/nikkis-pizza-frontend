@@ -76,8 +76,8 @@ const handleChange = (e) => {
           password: "",
         });
         setSubmitSuccess(false);
-        // Optionally redirect to dashboard since user is now logged in
-        // navigate('/dashboard');
+        // Redirect to pizzas since user is now logged in
+        navigate('/pizzas');
       }, 3000);
     } else {
       // Handle errors returned from auth context
