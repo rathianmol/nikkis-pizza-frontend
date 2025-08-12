@@ -1,9 +1,11 @@
 import { useState, useContext } from "react";
 import { Eye, EyeOff, User, Mail, Lock, CheckCircle, AlertCircle } from "lucide-react";
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 export default function Register() {
     const { register } = useAuth();
+    const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
     name: "",
@@ -17,6 +19,11 @@ export default function Register() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const handleSignInClick = () => {
+    navigate('/login');
+    return;
+  }
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -270,7 +277,10 @@ export default function Register() {
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             Already have an account?{" "}
-            <button className="text-blue-600 hover:text-blue-700 font-medium hover:underline">
+            <button 
+              className="text-blue-600 hover:text-blue-700 font-medium hover:underline"
+              onClick={handleSignInClick}
+            >
               Sign In
             </button>
           </p>
