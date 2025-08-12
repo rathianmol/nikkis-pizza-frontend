@@ -1,10 +1,14 @@
 import { useState } from "react";
 import { useDispatch } from 'react-redux';
 import { addToCart } from "../redux/cartSlice";
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function PizzaCard({ pizza }) {
+  const navigate = useNavigate();
   const [selectedSize, setSelectedSize] = useState("");
   const dispatch = useDispatch();
+  const { isAuthenticated } = useAuth();
 
   console.log('The prop being passed in to the component: ');
   console.log(pizza);
@@ -23,6 +27,10 @@ export default function PizzaCard({ pizza }) {
   const selectedSizeData = sizes.find(size => size.name === selectedSize);
 
   const handleAddToCart = () => {
+    if ( !isAuthenticated ) {
+      navigate('/login');
+      return;
+    }
     if (selectedSize && selectedSizeData) {
 
         const correctIndexFormat = sizes.find(size => size.name === selectedSize)?.indexValue;
@@ -77,6 +85,7 @@ export default function PizzaCard({ pizza }) {
               <button
                 key={size.name}
                 onClick={() => setSelectedSize(size.name)}
+                disabled={!isAuthenticated}
                 className={`px-3 py-2 text-sm rounded-md border transition-colors flex flex-col items-center ${
                   selectedSize === size.name
                     ? "bg-blue-500 text-white border-blue-500"
@@ -102,7 +111,7 @@ export default function PizzaCard({ pizza }) {
         {/* Add to Cart Button */}
         <button
           onClick={handleAddToCart}
-        //   onClick={() => dispatch(addToCart(pizza))}
+          //   onClick={() => dispatch(addToCart(pizza))}
           disabled={!selectedSize}
           className={`w-full py-3 px-4 rounded-md font-medium transition-colors ${
             selectedSize
@@ -110,8 +119,9 @@ export default function PizzaCard({ pizza }) {
               : "bg-gray-300 text-gray-500 cursor-not-allowed"
           }`}
         >
-          Add to Cart
+          {isAuthenticated ? "Add to Cart" : "Login to Add to Cart"}
         </button>
+        
       </div>
     </div>
   );
