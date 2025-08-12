@@ -4,7 +4,6 @@ import Logout from './Logout';
 import { useSelector } from 'react-redux';
 import { ShoppingCart, Menu, X, Pizza } from 'lucide-react';
 import { useState } from 'react';
-
 function Navbar() {
   const { amount } = useSelector((store) => store.cart);
   const { isAuthenticated } = useAuth();
@@ -42,15 +41,9 @@ function Navbar() {
               <>
                 <Link 
                   to="/login" 
-                  className="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
-                >
-                  Login
-                </Link>
-                <Link 
-                  to="/register" 
                   className="bg-red-600 text-white px-4 py-2 rounded-md text-sm font-medium hover:bg-red-700 transition-colors duration-200"
                 >
-                  Register
+                  Login
                 </Link>
               </>
             )}

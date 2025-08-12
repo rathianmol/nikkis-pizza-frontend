@@ -1,11 +1,12 @@
 import { useState, useContext } from "react";
 import { Eye, EyeOff, Mail, Lock, CheckCircle, AlertCircle } from "lucide-react";
 import { useAuth } from '../contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function Login() {
 
-    const { login } = useAuth();
-
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
     password: ""
@@ -15,6 +16,11 @@ function Login() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
+
+  const handleRegisterClick = () => {
+    navigate('/register');
+    return;
+  }
 
 const handleChange = (e) => {
     const { name, value } = e.target;
@@ -221,7 +227,10 @@ const handleChange = (e) => {
         <div className="mt-6 text-center">
           <p className="text-gray-600">
             Don't have an account?{" "}
-            <button className="text-indigo-600 hover:text-indigo-700 font-medium hover:underline">
+            <button 
+              className="text-indigo-600 hover:text-indigo-700 font-medium hover:underline"
+              onClick={handleRegisterClick}
+            >
               Register
             </button>
           </p>
