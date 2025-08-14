@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import PizzaCard from "./PizzaCard";
+import { Link } from 'react-router-dom';
 
 function Pizzas() {
     const [pizzas, setPizzas] = useState([]);
@@ -75,6 +76,9 @@ function Pizzas() {
                     <p className="text-gray-600 text-lg max-w-2xl mx-auto">
                         Discover our amazing selection of handcrafted pizzas made with the finest ingredients
                     </p>
+                        <p className="text-gray-600 text-lg mt-4">
+                            Please <Link to="/register" className="text-blue-600 hover:text-blue-800 underline">register</Link> with us to place order.
+                        </p>
                 </div>
 
                 {/* Pizza Grid */}
