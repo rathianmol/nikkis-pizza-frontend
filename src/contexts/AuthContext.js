@@ -12,10 +12,17 @@ export const useAuth = () => {
 };
 
 export function AuthProvider({ children }) {
-  const [user, setUser] = useState(null);
+  // const [user, setUser] = useState(null);
   const [token, setToken] = useState(localStorage.getItem('auth_token'));
+  // Role, Address contained within user object.
+  const [user, setUser] = useState(() => {
+  const savedUser = localStorage.getItem('auth_user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+  
 
   const register = async (userData) => {
+    // debugger
     try {
       const response = await fetch('http://localhost:8000/api/register', {
         method: 'POST',
@@ -34,8 +41,12 @@ export function AuthProvider({ children }) {
       const data = await response.json();
 
       if (response.ok) {
+
+      console.log("dumping 'data': ");
+      console.log(data);
         // Store token and user data from your API response structure
-        localStorage.setItem('auth_token', data.token);
+        localStorage.setItem('auth_token', (data.token));
+        localStorage.setItem('auth_user', JSON.stringify(data.user));
         setToken(data.token);
         setUser(data.user); // This contains the full user object with roles
         
@@ -44,7 +55,6 @@ export function AuthProvider({ children }) {
           data: {
             message: data.message,
             user: data.user,
-            role: data.role
           }
         };
       } else {
@@ -63,6 +73,7 @@ export function AuthProvider({ children }) {
   };
 
   const login = async (credentials) => {
+    console.log('inside auth-context-login: ');
     try {
       const response = await fetch('http://localhost:8000/api/login', {
         method: 'POST',
@@ -74,12 +85,18 @@ export function AuthProvider({ children }) {
       });
 
       const data = await response.json();
+      console.log("dumping 'data': ");
+      console.log(data);
 
       if (response.ok) {
         // Store token and user data
+        console.log('setting the token, user and local storage auth-token');
         localStorage.setItem('auth_token', data.token);
+        localStorage.setItem('auth_user', JSON.stringify(data.user));
         setToken(data.token);
         setUser(data.user);
+        console.log(data.token);
+        console.log(data.user);
         
         return { success: true, data };
       } else {
@@ -99,21 +116,27 @@ export function AuthProvider({ children }) {
 
   const logout = (navigate) => {
     localStorage.removeItem('auth_token');
+    localStorage.removeItem('auth_user');
     setToken(null);
     setUser(null);
   };
 
-  // Helper function to get user role
-  const getUserRole = () => {
-    if (!user || !user.roles || user.roles.length === 0) return null;
-    return user.roles[0].name; // Assuming user has one primary role
-  };
 
-  // Helper function to check if user has specific role
-  const hasRole = (roleName) => {
-    if (!user || !user.roles) return false;
-    return user.roles.some(role => role.name === roleName);
-  };
+  const updateUserContextAddress = (addressFormData) => {
+    // debugger
+    if (!user) return;
+    
+    const updatedUser = {
+      ...user,
+      address: {
+        ...user.address, // Preserve existing address properties (like id)
+        ...addressFormData // Override with new form data
+      }
+    };
+    
+    setUser(updatedUser);
+    localStorage.setItem('auth_user', JSON.stringify(updatedUser));
+  }
 
   const value = {
     // State
@@ -127,8 +150,7 @@ export function AuthProvider({ children }) {
     logout,
     
     // Helper methods
-    getUserRole,
-    hasRole,
+    updateUserContextAddress,
   };
 
   return (
