@@ -85,7 +85,9 @@ export default function Register() {
     const result = await register(formData);
     
     if (result.success) {
-      console.log("Registration successful:", result.data);
+      // console.log("Registration successful:", result.data);
+      
+      // This causes the welcome banner to appear for 3 seconds.
       setSubmitSuccess(true);
       
       // Reset form after success
@@ -99,6 +101,8 @@ export default function Register() {
         setSubmitSuccess(false);
         // Optionally redirect to dashboard since user is now logged in
         // navigate('/dashboard');
+        navigate('/create-address')
+
       }, 3000);
     } else {
       // Handle errors returned from auth context
