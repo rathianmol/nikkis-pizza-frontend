@@ -4,6 +4,9 @@ const initialState = {
     cartItems: [],
     amount: 0,
     totalPrice: 0.00,
+    orderType: 'pickup', // 'pickup' or 'delivery'
+    paymentMethod: 'cash', // 'cash' or 'card'
+    deliveryAddress: null, // Will store address object when delivery is selected
 };
 
 const cartSlice = createSlice({
@@ -15,7 +18,7 @@ const cartSlice = createSlice({
             state.amount+=1;
             state.totalPrice = Math.round((state.totalPrice + parseFloat(action.payload.price)) * 100) / 100;
         },
-        removeFromCart: (state, action) => {            
+        removeFromCart: (state, action) => {          
             const itemToRemove = state.cartItems.find((item) => item.id === action.payload);
             
             if (itemToRemove) {
@@ -29,9 +32,32 @@ const cartSlice = createSlice({
             state.cartItems = [];
             state.amount = 0;
             state.totalPrice = 0.00;
+            state.orderType = 'pickup';
+            state.paymentMethod = 'cash';
+            state.deliveryAddress = null;
+        },
+        setOrderType: (state, action) => {
+            state.orderType = action.payload;
+            // Clear delivery address if switching to pickup
+            if (action.payload === 'pickup') {
+                state.deliveryAddress = null;
+            }
+        },
+        setPaymentMethod: (state, action) => {
+            state.paymentMethod = action.payload;
+        },
+        setDeliveryAddress: (state, action) => {
+            state.deliveryAddress = action.payload;
         }
     }
 })
 
 export default cartSlice.reducer;
-export const {addToCart, removeFromCart, emptyCart} = cartSlice.actions;
+export const {
+    addToCart, 
+    removeFromCart, 
+    emptyCart, 
+    setOrderType, 
+    setPaymentMethod, 
+    setDeliveryAddress
+} = cartSlice.actions;
