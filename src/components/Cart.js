@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFromCart, setOrderType, setPaymentMethod, setDeliveryAddress } from '../redux/cartSlice';
+import { removeFromCart, setOrderType, setPaymentMethod, setDeliveryAddress, emptyCart } from '../redux/cartSlice';
 import { useAuth } from '../contexts/AuthContext';
 import { Link } from 'react-router-dom';
 
@@ -8,7 +8,18 @@ export default function Cart() {
   const { isAuthenticated, user } = useAuth();
   const { cartItems, totalPrice, amount, orderType, paymentMethod, deliveryAddress } = useSelector((store) => store.cart);
 
+  console.log("inside cart component - dumping cartItems var:");
+  console.log(cartItems);
+
   const dispatch = useDispatch();
+  
+  // Form states
+  // const [contactInfo, setContactInfo] = useState({
+  //   firstName: '',
+  //   lastName: '',
+  //   email: '',
+  //   phoneNumber: ''
+  // });
   
   const [paymentInfo, setPaymentInfo] = useState({
     cardNumber: '',
@@ -47,6 +58,13 @@ export default function Cart() {
     dispatch(removeFromCart(itemId));
   };
 
+  // const handleContactInfoChange = (field, value) => {
+  //   setContactInfo(prev => ({
+  //     ...prev,
+  //     [field]: value
+  //   }));
+  // };
+
   const handlePaymentInfoChange = (field, value) => {
     setPaymentInfo(prev => ({
       ...prev,
@@ -59,6 +77,15 @@ export default function Cart() {
       ...prev,
       [field]: value
     }));
+  };
+
+  const handleEmptyCart = () => {
+    if (window.confirm('Are you sure you want to empty your cart?')) {
+      dispatch(emptyCart());
+      setPaymentInfo({ cardNumber: '', expirationDate: '', securityCode: '', billingZipCode: '' });
+      setAddressForm({ address_line_1: '', address_line_2: '', city: '', state: '', postal_code: '' });
+      setAddressMessage({ type: '', text: '' });
+    }
   };
 
   const handleOrderTypeChange = (type) => {
@@ -132,27 +159,27 @@ export default function Cart() {
     }
 
     // Prepare order data for backend
-    const orderData = {
-      items: cartItems,
-      orderType,
-      paymentMethod,
-      deliveryAddress: orderType === 'delivery' ? deliveryAddress : null,
-      totalPrice,
-      // contactInfo: isAuthenticated ? null : contactInfo,
-      // Note: card data will be processed but not saved
-      paymentInfo: paymentMethod === 'card' ? paymentInfo : null
-    };
+    // const orderData = {
+    //   items: cartItems,
+    //   orderType,
+    //   paymentMethod,
+    //   deliveryAddress: orderType === 'delivery' ? deliveryAddress : null,
+    //   totalPrice,
+    //   // contactInfo: isAuthenticated ? null : contactInfo,
+    //   // Note: card data will be processed but not saved
+    //   paymentInfo: paymentMethod === 'card' ? paymentInfo : null
+    // };
 
-    // Process order (replace with actual API call)
-    console.log('Order data to be sent to Laravel backend:', orderData);
+    // // Process order (replace with actual API call)
+    // console.log('Order data to be sent to Laravel backend:', orderData);
 
-    alert(`Order placed successfully! Total: $${totalPrice}`);
+    // alert(`Order placed successfully! Total: $${totalPrice}`);
     
-    // Reset forms
-    // setContactInfo({ firstName: '', lastName: '', email: '', phoneNumber: '' });
-    setPaymentInfo({ cardNumber: '', expirationDate: '', securityCode: '', billingZipCode: '' });
-    setAddressForm({ address_line_1: '', address_line_2: '', city: '', state: '', postal_code: '' });
-    setAddressMessage({ type: '', text: '' });
+    // // Reset forms
+    // // setContactInfo({ firstName: '', lastName: '', email: '', phoneNumber: '' });
+    // setPaymentInfo({ cardNumber: '', expirationDate: '', securityCode: '', billingZipCode: '' });
+    // setAddressForm({ street: '', city: '', state: '', zipCode: '' });
+    // setAddressMessage({ type: '', text: '' });
   };
 
   const formatCardNumber = (value) => {
@@ -176,6 +203,46 @@ export default function Cart() {
       return v.substring(0, 2) + '/' + v.substring(2, 4);
     }
     return v;
+  };
+
+  // Validation function to check if order can be placed
+  const isOrderValid = () => {
+    // Must have items in cart
+    if (cartItems.length === 0) return false;
+
+    // Must have order type selected
+    if (!orderType) return false;
+
+    // If delivery, must have valid address
+    if (orderType === 'delivery') {
+      const addressValid = addressForm.address_line_1 && 
+                          addressForm.city && 
+                          addressForm.state && 
+                          addressForm.postal_code;
+      if (!addressValid) return false;
+    }
+
+    // Must have payment method selected
+    if (!paymentMethod) return false;
+
+    // If card payment, must have valid card info
+    if (paymentMethod === 'card') {
+      const cardValid = paymentInfo.cardNumber && 
+                       paymentInfo.expirationDate && 
+                       paymentInfo.securityCode && 
+                       paymentInfo.billingZipCode;
+      if (!cardValid) return false;
+    }
+
+    return true;
+  };
+
+    // Function to check if address form is incomplete
+  const isAddressIncomplete = () => {
+    return !addressForm.address_line_1 || 
+           !addressForm.city || 
+           !addressForm.state || 
+           !addressForm.postal_code;
   };
 
   if (!isAuthenticated) {
@@ -253,8 +320,14 @@ export default function Cart() {
           ))}
           
           <div className="mt-6 pt-4 border-t border-gray-200">
-            <div className="flex justify-between text-xl font-bold text-gray-900">
+            <div className="flex justify-between items-center text-xl font-bold text-gray-900">
               <span>Total: ${totalPrice}</span>
+              <button
+                onClick={handleEmptyCart}
+                className="bg-red-500 hover:bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors"
+              >
+                Empty Cart
+              </button>
             </div>
           </div>
         </div>
@@ -296,7 +369,7 @@ export default function Cart() {
         {orderType === 'delivery' && (
           <div className="bg-white rounded-lg shadow-md p-6">
             <h2 className="text-xl font-semibold text-gray-900 mb-4">Delivery Address</h2>
-            
+            {user?.address && <h4 className="text-m font-semibold text-gray-900 mb-4">Update Current Address?</h4>}
             {/* Address message */}
             {addressMessage.text && (
               <div className={`mb-4 p-3 rounded-md ${
@@ -318,26 +391,26 @@ export default function Cart() {
                   id="address_line_1"
                   name="address_line_1"
                   value={addressForm.address_line_1}
-                  onChange={(e) => handleAddressChange('street', e.target.value)}
+                  onChange={(e) => handleAddressChange('address_line_1', e.target.value)}
                   placeholder="123 Main Street"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
                 />
               </div>
-                <div className="md:col-span-2">
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Apartment, Suite, etc.
-                  </label>
-                  <input
-                    type="text"
-                    id="address_line_2"
-                    name="address_line_2"
-                    value={addressForm.address_line_2}
-                    onChange={(e) => handleAddressChange('street', e.target.value)}
-                    placeholder="Apt 4B (optional)"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    required
-                  />
+              <div className="md:col-span-2">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Apartment, Suite, etc.
+                </label>
+                <input
+                  type="text"
+                  id="address_line_2"
+                  name="address_line_2"
+                  value={addressForm.address_line_2}
+                  onChange={(e) => handleAddressChange('address_line_2', e.target.value)}
+                  placeholder="Apt 4B (optional)"
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  required
+                />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -372,7 +445,7 @@ export default function Cart() {
                 <input
                   type="text"
                   value={addressForm.postal_code}
-                  onChange={(e) => handleAddressChange('zipCode', e.target.value)}
+                  onChange={(e) => handleAddressChange('postal_code', e.target.value)}
                   placeholder="12345"
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   required
@@ -383,9 +456,17 @@ export default function Cart() {
             <button
               type="button"
               onClick={handleAddressSubmit}
+              // disabled={!isAddressIncomplete()}
               className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+              // className={`mt-4 px-6 py-2 rounded-lg text-white font-medium transition-colors ${
+              //   isAddressIncomplete()
+              //     ? 'bg-blue-600 hover:bg-blue-700 cursor-pointer'
+              //     : 'bg-gray-400 cursor-not-allowed'
+              // }`}
+
             >
               Save Address
+              {/* {!isAddressIncomplete() ? 'Update Address' : "Save Address" } */}
             </button>
           </div>
         )}
@@ -495,13 +576,22 @@ export default function Cart() {
         <div className="bg-white rounded-lg shadow-md p-6">
           <button
             type="submit"
-            className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-6 rounded-lg text-lg transition-colors"
+            disabled={!isOrderValid()}
+            className={`w-full font-bold py-4 px-6 rounded-lg text-lg transition-colors ${
+              isOrderValid()
+                ? 'bg-green-600 hover:bg-green-700 text-white cursor-pointer'
+                : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+            }`}
           >
             Place Your Order
           </button>
+          {!isOrderValid() && (
+            <p className="text-sm text-gray-500 mt-2 text-center">
+              Please complete all required fields to place your order
+            </p>
+          )}
         </div>
       </form>
     </div>
   );
 }
-
