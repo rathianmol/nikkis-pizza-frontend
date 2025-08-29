@@ -68,9 +68,9 @@ const cartSlice = createSlice({
         setOrderType: (state, action) => {
             state.orderType = action.payload;
             // Clear delivery address if switching to pickup
-            // if (action.payload === 'pickup') {
-            // state.deliveryAddress = null;
-            // }
+            if (action.payload === 'pickup') {
+            state.deliveryAddress = null;
+            }
             saveCartToStorage(state);
         },
         setPaymentMethod: (state, action) => {
