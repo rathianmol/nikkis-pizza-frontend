@@ -1,12 +1,14 @@
 import { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { removeFromCart, setOrderType, setPaymentMethod, setDeliveryAddress, emptyCart } from '../redux/cartSlice';
+import { removeFromCart, setOrderType, setPaymentMethod, setDeliveryAddress, emptyCart, setCardInfo } from '../redux/cartSlice';
 import { useAuth } from '../contexts/AuthContext';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { postOrder } from '../services/OrderService';
 
 export default function Cart() {
-  const { isAuthenticated, user } = useAuth();
-  const { cartItems, totalPrice, amount, orderType, paymentMethod, deliveryAddress } = useSelector((store) => store.cart);
+  const navigate = useNavigate();
+  const { isAuthenticated, user, token } = useAuth();
+  const { cartItems, totalPrice, amount, orderType, paymentMethod, deliveryAddress, cardInfo } = useSelector((store) => store.cart);
 
   console.log("inside cart component - dumping cartItems var:");
   console.log(cartItems);
@@ -108,17 +110,22 @@ export default function Cart() {
 
   const handlePaymentMethodChange = (method) => {
     dispatch(setPaymentMethod(method));
+    if (method === 'cash') {
+      // setAddressForm({ address_line_1: '', address_line_2: '', city: '', state: '', postal_code: '' });
+      // setAddressMessage({ type: '', text: '' });
+      setPaymentInfo({cardNumber: '', expirationDate: '', securityCode: '', billingZipCode: ''});
+      dispatch(setCardInfo(paymentInfo));
+
+    } else if (method === 'card' && Object.values(paymentInfo).every(value => value.trim() !== '')) {
+      // Auto-fill with user's address if available
+      dispatch(setCardInfo(paymentInfo));
+    }
   };
 
   const handleAddressSubmit = async (e) => {
     e.preventDefault();
     
-    // Validate address form
-    if (!addressForm.address_line_1 || !addressForm.address_line_2 || !addressForm.city || !addressForm.state || !addressForm.postal_code) {
-      setAddressMessage({ type: 'error', text: 'Please fill in all address fields.' });
-      return;
-    }
-
+    // TODO
     // try {
     //   // Call your address service here
     //   // const response = await addressService.createAddress(addressForm);
@@ -137,49 +144,63 @@ export default function Cart() {
     // }
   };
 
-  const handlePlaceOrder = (e) => {
+  const handlePlaceOrder = async (e) => {
     e.preventDefault();
     
-    // Basic validation
-    if (cartItems.length === 0) {
-      alert('Your cart is empty.');
-      return;
-    }
-
-    if (orderType === 'delivery' && !deliveryAddress) {
-      alert('Please provide a delivery address.');
-      return;
-    }
-
-    if (paymentMethod === 'card') {
-      if (!paymentInfo.cardNumber || !paymentInfo.expirationDate || !paymentInfo.securityCode || !paymentInfo.billingZipCode) {
-        alert('Please fill in all payment information fields.');
-        return;
-      }
-    }
-
     // Prepare order data for backend
-    // const orderData = {
-    //   items: cartItems,
-    //   orderType,
-    //   paymentMethod,
-    //   deliveryAddress: orderType === 'delivery' ? deliveryAddress : null,
-    //   totalPrice,
-    //   // contactInfo: isAuthenticated ? null : contactInfo,
-    //   // Note: card data will be processed but not saved
-    //   paymentInfo: paymentMethod === 'card' ? paymentInfo : null
-    // };
+    const orderData = {
+      cartItems: cartItems,
+      amount,
+      orderType,
+      paymentMethod,
+      deliveryAddress: orderType === 'delivery' ? deliveryAddress : null,
+      totalPrice,
+      cardInfo: paymentMethod === 'card' ? paymentInfo : null,
+      status: 'pending',
+    };
+
+     try {
+      let result;
+
+      // if (updatingOrder) {
+          // user will have option to update order (under given time constraint), post order creation.
+      // }
+      result = await postOrder(token, orderData);
+
+      if (result.success) {
+          // debugger
+
+          // setSuccess(result.message); set-order-success?
+
+          // Reset forms
+          setAddressForm({ address_line_1: '', address_line_2: '', city: '', state: '', postal_code: '' });
+          setPaymentInfo({ cardNumber: '', expirationDate: '', securityCode: '', billingZipCode: '' });
+          setAddressMessage({ type: '', text: '' });
+          dispatch(emptyCart());
+          alert(`Order placed successfully! Total: $${totalPrice}`);
+          // Navigate to user's orders page after 1.5 seconds.
+          setTimeout(() => {
+              // navigate('/{user}/orders');
+              navigate('/'); // for now, navigate back to landing page post-order success response.
+          }, 2000);
+        } else {
+            // setError(result.message);
+            // Handle validation errors
+            if (result.errors) {
+                console.log('Validation errors:', result.errors);
+            }
+        }
+    } catch (error) {
+      console.error('Error saving order:', error);
+      // setError('Failed to save order. Please try again.');
+    }
 
     // // Process order (replace with actual API call)
     // console.log('Order data to be sent to Laravel backend:', orderData);
 
     // alert(`Order placed successfully! Total: $${totalPrice}`);
     
-    // // Reset forms
-    // // setContactInfo({ firstName: '', lastName: '', email: '', phoneNumber: '' });
-    // setPaymentInfo({ cardNumber: '', expirationDate: '', securityCode: '', billingZipCode: '' });
-    // setAddressForm({ street: '', city: '', state: '', zipCode: '' });
-    // setAddressMessage({ type: '', text: '' });
+
   };
 
   const formatCardNumber = (value) => {
