@@ -76,7 +76,7 @@ const cartSlice = createSlice({
         },
         setPaymentMethod: (state, action) => {
             state.paymentMethod = action.payload;
-            if (action.payload === 'card') {
+            if (action.payload === 'cash') {
                 state.cardInfo = null;
             }
             saveCartToStorage(state);
