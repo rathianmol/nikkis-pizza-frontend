@@ -67,7 +67,8 @@ const cartSlice = createSlice({
         },
         setOrderType: (state, action) => {
             state.orderType = action.payload;
-            // Clear delivery address if switching to pickup
+            // Clear delivery address if switching to pickup.
+            // Address data can still be found in the auth_user context/local-storage.
             if (action.payload === 'pickup') {
             state.deliveryAddress = null;
             }
