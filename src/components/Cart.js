@@ -4,12 +4,13 @@ import { removeFromCart, setOrderType, setPaymentMethod, setDeliveryAddress, emp
 import { useAuth } from '../contexts/AuthContext';
 import { Link, useNavigate } from 'react-router-dom';
 import { postOrder } from '../services/OrderService';
+import { CheckCircle } from "lucide-react";
 
 export default function Cart() {
   const navigate = useNavigate();
   const { isAuthenticated, user, token } = useAuth();
   const { cartItems, totalPrice, amount, orderType, paymentMethod, deliveryAddress, cardInfo } = useSelector((store) => store.cart);
-
+  const [orderSubmitSuccess, setOrderSubmitSuccess] = useState(false);
   console.log("inside cart component - dumping cartItems var:");
   console.log(cartItems);
 
@@ -169,20 +170,23 @@ export default function Cart() {
 
       if (result.success) {
           // debugger
-
+          setOrderSubmitSuccess(true);
           // setSuccess(result.message); set-order-success?
 
           // Reset forms
           setAddressForm({ address_line_1: '', address_line_2: '', city: '', state: '', postal_code: '' });
           setPaymentInfo({ cardNumber: '', expirationDate: '', securityCode: '', billingZipCode: '' });
           setAddressMessage({ type: '', text: '' });
-          dispatch(emptyCart());
-          alert(`Order placed successfully! Total: $${totalPrice}`);
+          // dispatch(emptyCart());
+          // alert(`Order placed successfully! Total: $${totalPrice}`);
           // Navigate to user's orders page after 1.5 seconds.
           setTimeout(() => {
+              setOrderSubmitSuccess(false);
               // navigate('/{user}/orders');
               navigate('/'); // for now, navigate back to landing page post-order success response.
           }, 2000);
+
+          dispatch(emptyCart());
         } else {
             // setError(result.message);
             // Handle validation errors
@@ -191,6 +195,7 @@ export default function Cart() {
             }
         }
     } catch (error) {
+      alert(`Error saving order: ${error}.`);
       console.error('Error saving order:', error);
       // setError('Failed to save order. Please try again.');
     }
@@ -282,6 +287,17 @@ export default function Cart() {
       </div>
     );
   }
+  if (orderSubmitSuccess) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+        <div className="bg-white rounded-2xl shadow-xl p-8 w-full max-w-md text-center">
+          <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Nikki's Pizza</h2>
+          <p className="text-gray-600">Your order has been successfully placed.</p>
+        </div>
+      </div>
+    );
+  }
 
   if (cartItems.length === 0) {
     return (
@@ -294,6 +310,8 @@ export default function Cart() {
       </div>
     );
   }
+
+
 
   return (
     <div className="max-w-4xl mx-auto p-6">
