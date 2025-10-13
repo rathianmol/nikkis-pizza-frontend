@@ -10,6 +10,8 @@ import UserAddress from './components/UserAddress';
 import { Provider } from 'react-redux';
 import store from './redux/store';
 import Footer from './components/Footer';
+import OrderTracking from './components/OrderTracking';
+import OrderHistory from './components/OrderHistory';
 import { AuthProvider } from './contexts/AuthContext';
 // import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoutes from './utils/ProtectedRoutes';
@@ -29,6 +31,8 @@ function App() {
             <Route path="/cart" element={<Cart />} />
             <Route element={<ProtectedRoutes />}>
               <Route path="/create-address" element={<UserAddress />} />
+              <Route path="/order-tracking" element={<OrderTracking />} />
+              <Route path="/order-history" element={<OrderHistory />} />
             </Route>
             {/* <Route path="/create-address" element={<UserAddress />} /> */}
           </Routes>
