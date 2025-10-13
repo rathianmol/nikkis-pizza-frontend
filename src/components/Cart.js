@@ -182,8 +182,10 @@ export default function Cart() {
           // Navigate to user's orders page after 1.5 seconds.
           setTimeout(() => {
               setOrderSubmitSuccess(false);
+              navigate('/order-history');
               // navigate('/{user}/orders');
-              navigate('/'); // for now, navigate back to landing page post-order success response.
+              // navigate('/'); // for now, navigate back to landing page post-order success response.
+
           }, 2000);
 
           dispatch(emptyCart());
