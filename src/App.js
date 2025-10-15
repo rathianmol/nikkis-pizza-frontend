@@ -15,6 +15,7 @@ import OrderDetails from './components/OrderDetails';
 import { AuthProvider } from './contexts/AuthContext';
 // import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoutes from './utils/ProtectedRoutes';
+import AdminProtectedRoutes from './utils/AdminProtectedRoutes';
 import { Routes, Route } from 'react-router-dom';
 function App() {
   return (
@@ -33,6 +34,13 @@ function App() {
               <Route path="/create-address" element={<UserAddress />} />
               <Route path="/order-history" element={<OrderHistory />} />
               <Route path="/orders/:orderId" element={<OrderDetails />} />
+            </Route>
+            {/* Admin-only routes */}
+            <Route element={<AdminProtectedRoutes />}>
+                {/* Dummy admin routes: */}
+                {/* <Route path="/admin" element={<AdminDashboard />} /> */}
+                {/* <Route path="/admin/users" element={<AdminUsers />} /> */}
+                {/* <Route path="/admin/settings" element={<AdminSettings />} /> */}
             </Route>
             {/* <Route path="/create-address" element={<UserAddress />} /> */}
           </Routes>
