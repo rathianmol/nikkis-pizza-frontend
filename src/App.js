@@ -16,6 +16,8 @@ import { AuthProvider } from './contexts/AuthContext';
 // import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import AdminProtectedRoutes from './utils/AdminProtectedRoutes';
+import OrderList from './components/OrderList';
+import AdminLayout from './components/AdminLayout';
 import { Routes, Route } from 'react-router-dom';
 function App() {
   return (
@@ -41,6 +43,35 @@ function App() {
                 {/* <Route path="/admin" element={<AdminDashboard />} /> */}
                 {/* <Route path="/admin/users" element={<AdminUsers />} /> */}
                 {/* <Route path="/admin/settings" element={<AdminSettings />} /> */}
+
+                 <Route element={<AdminLayout />}>
+                    {/* Dashboard */}
+                    {/* <Route path="/admin" element={<AdminDashboard />} /> */}
+
+                    {/* Orders */}
+                    <Route path="/admin/orders" element={<OrderList />} />
+                    {/* <Route path="/admin/orders/:id" element={<OrderDetails />} /> */}
+
+                    {/* Menu Management */}
+                    {/* <Route path="/admin/menu/products" element={<MenuProducts />} />
+                    <Route path="/admin/menu/categories" element={<MenuCategories />} />
+                    <Route path="/admin/menu/variants" element={<MenuVariants />} /> */}
+
+                    {/* Customer Management */}
+                    {/* <Route path="/admin/customers" element={<CustomerList />} />
+                    <Route path="/admin/customers/:id" element={<CustomerDetails />} /> */}
+
+                    {/* Reports */}
+                    {/* <Route path="/admin/reports/sales" element={<SalesReports />} />
+                    <Route path="/admin/reports/best-sellers" element={<BestSellers />} />
+                    <Route path="/admin/reports/coupons" element={<CouponTracking />} /> */}
+
+                    {/* Settings */}
+                    {/* <Route path="/admin/settings/hours" element={<BusinessHours />} />
+                    <Route path="/admin/settings/delivery" element={<DeliveryZones />} />
+                    <Route path="/admin/settings/tax" element={<TaxRates />} />
+                    <Route path="/admin/settings/notifications" element={<Notifications />} /> */}
+                </Route>
             </Route>
             {/* <Route path="/create-address" element={<UserAddress />} /> */}
           </Routes>
