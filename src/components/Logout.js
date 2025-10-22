@@ -14,7 +14,7 @@ function Logout() {
         logout();
         
         // 2. Clear cart state (from Redux)
-        dispatch(emptyCart());
+        dispatch(emptyCart('logout'));
         
         // 3. Navigate to home page
         navigate('/');
