@@ -11,10 +11,10 @@ const AdminLayout = () => {
     const navigate = useNavigate();
     const location = useLocation();
 
-    const handleLogout = () => {
-        logout();
-        navigate('/');
-    };
+    // const handleLogout = () => {
+    //     logout();
+    //     navigate('/');
+    // };
 
     return (
         <div className="flex h-screen bg-gray-100">
@@ -41,13 +41,13 @@ const AdminLayout = () => {
                             <p className="text-sm font-medium text-gray-900">{user?.name}</p>
                             <p className="text-xs text-gray-500">{user?.role}</p>
                         </div>
-                        <button
+                        {/* <button
                             onClick={handleLogout}
                             className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg transition"
                         >
                             <LogOut className="w-4 h-4" />
                             Logout
-                        </button>
+                        </button> */}
                     </div>
                 </div>
 
