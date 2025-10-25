@@ -13,57 +13,60 @@ const Sidebar = ({ isOpen }) => {
     const location = useLocation();
 
     const menuItems = [
-        {
-            title: 'Dashboard',
-            icon: LayoutDashboard,
-            path: '/admin',
-            end: true
-        },
+        // {
+        //     title: 'Dashboard',
+        //     icon: LayoutDashboard,
+        //     path: '/admin',
+        //     end: true
+        // },
         {
             title: 'Orders',
             icon: ShoppingCart,
             path: '/admin/orders',
-            submenu: [
-                { title: 'All Orders', path: '/admin/orders' },
-                { title: 'Pending', path: '/admin/orders?status=pending' }
-            ]
+            // submenu: [
+            //     { title: 'All Orders', path: '/admin/orders' },
+            //     { title: 'Pending', path: '/admin/orders?status=pending' }
+            // ]
         },
-        {
-            title: 'Menu',
-            icon: UtensilsCrossed,
-            path: '/admin/menu',
-            submenu: [
-                { title: 'Products', path: '/admin/menu/products' },
-                { title: 'Categories', path: '/admin/menu/categories' },
-                { title: 'Variants', path: '/admin/menu/variants' }
-            ]
-        },
+        // {
+        //     title: 'Menu',
+        //     icon: UtensilsCrossed,
+        //     path: '/admin/menu',
+        //     submenu: [
+        //         { title: 'Products', path: '/admin/menu/products' },
+        //         { title: 'Categories', path: '/admin/menu/categories' },
+        //         { title: 'Variants', path: '/admin/menu/variants' }
+        //     ]
+        // },
         {
             title: 'Customers',
             icon: Users,
-            path: '/admin/customers'
+            path: '/admin/customers',
+            // submenu: [
+            //     { title: 'New Customer', path: '/admin/customer/create' },
+            // ],
         },
-        {
-            title: 'Reports',
-            icon: BarChart3,
-            path: '/admin/reports',
-            submenu: [
-                { title: 'Sales', path: '/admin/reports/sales' },
-                { title: 'Best Sellers', path: '/admin/reports/best-sellers' },
-                { title: 'Coupons', path: '/admin/reports/coupons' }
-            ]
-        },
-        {
-            title: 'Settings',
-            icon: Settings,
-            path: '/admin/settings',
-            submenu: [
-                { title: 'Business Hours', path: '/admin/settings/hours' },
-                { title: 'Delivery Zones', path: '/admin/settings/delivery' },
-                { title: 'Tax & Fees', path: '/admin/settings/tax' },
-                { title: 'Notifications', path: '/admin/settings/notifications' }
-            ]
-        }
+        // {
+        //     title: 'Reports',
+        //     icon: BarChart3,
+        //     path: '/admin/reports',
+        //     submenu: [
+        //         { title: 'Sales', path: '/admin/reports/sales' },
+        //         { title: 'Best Sellers', path: '/admin/reports/best-sellers' },
+        //         { title: 'Coupons', path: '/admin/reports/coupons' }
+        //     ]
+        // },
+        // {
+        //     title: 'Settings',
+        //     icon: Settings,
+        //     path: '/admin/settings',
+        //     submenu: [
+        //         { title: 'Business Hours', path: '/admin/settings/hours' },
+        //         { title: 'Delivery Zones', path: '/admin/settings/delivery' },
+        //         { title: 'Tax & Fees', path: '/admin/settings/tax' },
+        //         { title: 'Notifications', path: '/admin/settings/notifications' }
+        //     ]
+        // }
     ];
 
     const isActive = (path, end = false) => {
