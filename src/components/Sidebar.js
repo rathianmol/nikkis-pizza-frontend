@@ -6,7 +6,8 @@ import {
     Users,
     BarChart3,
     Settings,
-    ChevronRight
+    ChevronRight,
+    Locate
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen }) => {
@@ -42,6 +43,14 @@ const Sidebar = ({ isOpen }) => {
             title: 'Customers',
             icon: Users,
             path: '/admin/customers',
+            // submenu: [
+            //     { title: 'New Customer', path: '/admin/customer/create' },
+            // ],
+        },
+        {
+            title: 'Locations',
+            icon: Locate,
+            path: '/admin/locations',
             // submenu: [
             //     { title: 'New Customer', path: '/admin/customer/create' },
             // ],
