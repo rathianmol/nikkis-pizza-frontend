@@ -17,6 +17,7 @@ import { AuthProvider } from './contexts/AuthContext';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import AdminProtectedRoutes from './utils/AdminProtectedRoutes';
 import OrderList from './components/OrderList';
+import AdminStoreLocation from './components/AdminStoreLocation';
 import CustomerList from './components/CustomerList';
 import AdminLayout from './components/AdminLayout';
 import { Routes, Route } from 'react-router-dom';
@@ -53,14 +54,22 @@ function App() {
                     <Route path="/admin/orders" element={<OrderList />} />
                     {/* <Route path="/admin/orders/:id" element={<OrderDetails />} /> */}
 
+                    {/* Customer Management */}
+                    <Route path="/admin/customers" element={<CustomerList />} />
+                    {/* <Route path="/admin/customers/:id" element={<CustomerDetails />} /> */}
+
+
+                    {/* Store Location Management */}
+                    <Route path="/admin/store-locations" element={<AdminStoreLocation />} />
+
+
+                    {/* <Route path="/admin/customers/:id" element={<CustomerDetails />} /> */}
                     {/* Menu Management */}
                     {/* <Route path="/admin/menu/products" element={<MenuProducts />} />
                     <Route path="/admin/menu/categories" element={<MenuCategories />} />
                     <Route path="/admin/menu/variants" element={<MenuVariants />} /> */}
 
-                    {/* Customer Management */}
-                    <Route path="/admin/customers" element={<CustomerList />} />
-                    {/* <Route path="/admin/customers/:id" element={<CustomerDetails />} /> */}
+
 
                     {/* Reports */}
                     {/* <Route path="/admin/reports/sales" element={<SalesReports />} />

@@ -50,7 +50,7 @@ const Sidebar = ({ isOpen }) => {
         {
             title: 'Locations',
             icon: Locate,
-            path: '/admin/locations',
+            path: '/admin/store-locations',
             // submenu: [
             //     { title: 'New Customer', path: '/admin/customer/create' },
             // ],
