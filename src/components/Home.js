@@ -5,9 +5,11 @@ import GrilledVeggiePizza from '../images/grilled-veggie-pizza.png';
 import MexicanPizza       from '../images/mexican-pizza.png';
 import NYStylePizza       from '../images/ny-style-pizza.png';
 import ZuchinniCrustPizza from '../images/zucchini-crust-pizza.png';
+import { useNavigate } from 'react-router-dom';
 
 const Home = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
+  const navigate = useNavigate();
 
   const slides = [
     {
@@ -43,9 +45,11 @@ const Home = () => {
     setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
   };
 
-  const goToPizzas = () => {
+  const goToMenu = () => {
     // In a real app, this would use React Router or Next.js router
-    window.location.href = '/pizzas';
+    // window.location.href = '/pizzas';
+    navigate('/menu');
+    return;
   };
 
   return (
@@ -161,10 +165,10 @@ const Home = () => {
         {/* Call to Action Button */}
         <div className="text-center mt-16">
           <button
-            onClick={goToPizzas}
+            onClick={goToMenu}
             className="bg-red-600 text-white px-12 py-4 text-lg font-semibold rounded-full hover:bg-red-700 transform hover:scale-105 transition-all duration-300 shadow-lg hover:shadow-xl"
           >
-            Explore Our Pizzas
+            Explore Our Menu
           </button>
         </div>
       </div>
