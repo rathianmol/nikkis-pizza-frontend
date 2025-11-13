@@ -5,7 +5,7 @@ import { useNavigate } from 'react-router-dom';
 
 function Login() {
 
-  const { login } = useAuth();
+  const { login, isAuthenticated, isAdmin } = useAuth();
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: "",
@@ -77,7 +77,15 @@ const handleChange = (e) => {
         });
         setSubmitSuccess(false);
         // Redirect to pizzas since user is now logged in
-        navigate('/pizzas');
+        // navigate('/pizzas');
+        // debugger;
+        // if (isAuthenticated) {
+        //   if(isAdmin) {
+        //     navigate('/admin/orders');
+        //   }
+        //   navigate('/menu');
+        // }
+        navigate('/menu');
       }, 3000);
     } else {
       // Handle errors returned from auth context

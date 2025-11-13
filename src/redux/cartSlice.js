@@ -1,16 +1,28 @@
 import { createSlice } from "@reduxjs/toolkit";
 
+// Helper function to calculate item total (base + addons)
+const calculateItemTotal = (item) => {
+  let total = parseFloat(item.basePrice);
+  if (item.addons && item.addons.length > 0) {
+    item.addons.forEach(addon => {
+      total += parseFloat(addon.price);
+    });
+  }
+  return Math.round(total * 100) / 100;
+};
+
 // Load initial state from localStorage
 const loadCartFromStorage = () => {
-    let initialState = {
-        cartItems: [],
-        amount: 0,
-        totalPrice: 0.00,
-        orderType: 'pickup',
-        paymentMethod: 'cash',
-        cardInfo: null,
-        deliveryAddress: null,
-    };
+  let initialState = {
+    cartItems: [],
+    amount: 0,
+    totalPrice: 0.00,
+    orderType: 'pickup',
+    paymentMethod: 'cash',
+    cardInfo: null,
+    deliveryAddress: null,
+  };
+  
   try {
     const serializedCart = localStorage.getItem('cart');
     if (serializedCart === null) {
@@ -35,128 +47,149 @@ const saveCartToStorage = (state) => {
 const initialState = loadCartFromStorage();
 
 const cartSlice = createSlice({
-    name: 'cart',
-    initialState,
-    reducers: {
-        addToCart : (state, action) => {
-            state.cartItems.push(action.payload);
-            state.amount+=1;
-            state.totalPrice = Math.round((state.totalPrice + parseFloat(action.payload.price)) * 100) / 100;
-            saveCartToStorage(state);
-        },
-        removeFromCart: (state, action) => {          
-            const itemToRemove = state.cartItems.find((item) => item.id === action.payload);
-            
-            if (itemToRemove) {
-                // Remove the item
-                state.cartItems = state.cartItems.filter((item) => item.id !== action.payload);
-                state.amount -= 1;
-                state.totalPrice = Math.round((state.totalPrice - parseFloat(itemToRemove.price)) * 100) / 100;
-                saveCartToStorage(state);
-            }
-        },
-        emptyCart: (state, action) => {
-            state.cartItems = [];
-            state.amount = 0;
-            state.totalPrice = 0.00;
-            state.orderType = 'pickup';
-            state.paymentMethod = 'cash';
-            state.deliveryAddress = null;
-            state.cardInfo = null;
-            saveCartToStorage(state);
-        },
-        setOrderType: (state, action) => {
-            state.orderType = action.payload;
-            // Clear delivery address if switching to pickup.
-            // Address data can still be found in the auth_user context/local-storage.
-            if (action.payload === 'pickup') {
-            state.deliveryAddress = null;
-            }
-            saveCartToStorage(state);
-        },
-        setPaymentMethod: (state, action) => {
-            state.paymentMethod = action.payload;
-            if (action.payload === 'cash') {
-                state.cardInfo = null;
-            }
-            saveCartToStorage(state);
-        },
-        setDeliveryAddress: (state, action) => {
-            state.deliveryAddress = action.payload;
-            saveCartToStorage(state);
-        },
-        setCardInfo: (state, action) => {
-            state.cardInfo = action.payload;
-            saveCartToStorage(state);
-        },
-        // Optional: Clear localStorage
-        // clearCartStorage: (state) => {
-        //     localStorage.removeItem('pizzaCart');
-        //     Object.assign(state, {
-        //         cartItems: [],
-        //         amount: 0,
-        //         totalPrice: 0.00,
-        //         orderType: 'pickup',
-        //         paymentMethod: 'cash',
-        //         cardInfo: null,
-        //         deliveryAddress: null,
-        //     });
-        // }
-    }
-})
+  name: 'cart',
+  initialState,
+  reducers: {
+    addToCart: (state, action) => {
+      const newItem = action.payload;
+      // Recalculate price to ensure accuracy
+      const itemPrice = calculateItemTotal(newItem);
+      newItem.price = itemPrice.toFixed(2);
+      
+      state.cartItems.push(newItem);
+      state.amount += 1;
+      state.totalPrice = Math.round((state.totalPrice + itemPrice) * 100) / 100;
+      saveCartToStorage(state);
+    },
+    
+    removeFromCart: (state, action) => {
+      const itemToRemove = state.cartItems.find((item) => item.id === action.payload);
+      
+      if (itemToRemove) {
+        state.cartItems = state.cartItems.filter((item) => item.id !== action.payload);
+        state.amount -= 1;
+        state.totalPrice = Math.round((state.totalPrice - parseFloat(itemToRemove.price)) * 100) / 100;
+        saveCartToStorage(state);
+      }
+    },
+    
+    updateCartItem: (state, action) => {
+      const { id, updates } = action.payload;
+      const itemIndex = state.cartItems.findIndex((item) => item.id === id);
+      
+      if (itemIndex !== -1) {
+        const oldPrice = parseFloat(state.cartItems[itemIndex].price);
+        state.cartItems[itemIndex] = { ...state.cartItems[itemIndex], ...updates };
+        
+        // Recalculate item price if addons changed
+        const newPrice = calculateItemTotal(state.cartItems[itemIndex]);
+        state.cartItems[itemIndex].price = newPrice.toFixed(2);
+        
+        // Update total price
+        state.totalPrice = Math.round((state.totalPrice - oldPrice + newPrice) * 100) / 100;
+        saveCartToStorage(state);
+      }
+    },
+    
+    emptyCart: (state, action) => {
+      state.cartItems = [];
+      state.amount = 0;
+      state.totalPrice = 0.00;
+      state.orderType = 'pickup';
+      state.paymentMethod = 'cash';
+      state.deliveryAddress = null;
+      state.cardInfo = null;
+      
+      if (action.payload === 'logout') {
+        localStorage.removeItem('cart');
+      } else {
+        saveCartToStorage(state);
+      }
+    },
+    
+    setOrderType: (state, action) => {
+      state.orderType = action.payload;
+      if (action.payload === 'pickup') {
+        state.deliveryAddress = null;
+      }
+      saveCartToStorage(state);
+    },
+    
+    setPaymentMethod: (state, action) => {
+      state.paymentMethod = action.payload;
+      if (action.payload === 'cash') {
+        state.cardInfo = null;
+      }
+      saveCartToStorage(state);
+    },
+    
+    setDeliveryAddress: (state, action) => {
+      state.deliveryAddress = action.payload;
+      saveCartToStorage(state);
+    },
+    
+    setCardInfo: (state, action) => {
+      state.cardInfo = action.payload;
+      saveCartToStorage(state);
+    },
+  }
+});
 
 export default cartSlice.reducer;
 export const {
-    addToCart, 
-    removeFromCart, 
-    emptyCart, 
-    setOrderType, 
-    setPaymentMethod, 
-    setDeliveryAddress,
-    setCardInfo,
+  addToCart,
+  removeFromCart,
+  updateCartItem,
+  emptyCart,
+  setOrderType,
+  setPaymentMethod,
+  setDeliveryAddress,
+  setCardInfo,
 } = cartSlice.actions;
 
-
 /**
- * sample payload:
- * 
+ * Updated cart item structure:
  * {
-  "cartItems": [
-    {
-      "id": "3-Small-1756238120041",
-      "pizzaId": 3,
-      "title": "Margherita Pizza",
-      "image": "pizzas/margherita-pizza.png",
-      "size": "Small",
-      "price": "7.99"
-    },
-    {
-      "id": "2-Small-1756146975716",
-      "pizzaId": 2,
-      "title": "Wild Mushroom Pizza",
-      "image": "pizzas/mushroom-pizza.png",
-      "size": "Small",
-      "price": "9.99"
-    }
-  ],
-  "amount": 2,
-  "totalPrice": 17.98,
-  "orderType": "delivery",
-  "paymentMethod": "card",
-  "deliveryAddress": {
-    "id": 1,
-    "address_line_1": "123 Customer One Lane",
-    "address_line_2": "Apt 1224",
-    "city": "Burbank",
-    "state": "CA",
-    "postal_code": "90210"
-  },
-  "cardInfo": {
-    "cardNumber": "1234 5678 9012 3456",
-    "expirationDate": "11/30",
-    "securityCode": "123",
-    "billingZipCode": "90210"
-  },
-  "status": "pending"
-}
+ *   id: "3-medium-1756238120041",  // menuItemId-size-timestamp
+ *   menuItemId: 3,
+ *   categoryId: 1,
+ *   title: "Margherita Pizza",
+ *   slug: "margherita",
+ *   description: "Classic pizza with tomato sauce and mozzarella",
+ *   image: "pizzas/margherita-pizza.png",
+ *   size: "medium",
+ *   price: "274.00",  // Calculated total (base + addons)
+ *   basePrice: "229.00",  // Base price for the size
+ *   addons: [
+ *     {
+ *       addonId: 1,
+ *       addonName: "Extra Cheese",
+ *       size: "medium",
+ *       price: "45.00"
+ *     }
+ *   ]
+ * }
+ * 
+ * Complete cart state:
+ * {
+ *   cartItems: [...],
+ *   amount: 2,
+ *   totalPrice: 548.00,
+ *   orderType: "delivery",
+ *   paymentMethod: "card",
+ *   deliveryAddress: {
+ *     id: 1,
+ *     address_line_1: "123 Main St",
+ *     address_line_2: "Apt 4B",
+ *     city: "Mumbai",
+ *     state: "Maharashtra",
+ *     postal_code: "400001"
+ *   },
+ *   cardInfo: {
+ *     cardNumber: "1234 5678 9012 3456",
+ *     expirationDate: "12/25",
+ *     securityCode: "123",
+ *     billingZipCode: "400001"
+ *   }
+ * }
  */

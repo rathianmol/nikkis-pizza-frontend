@@ -1,7 +1,7 @@
 
 import Home from './components/Home';
 import Login from './components/Login';
-// import Menu from './components/Menu';
+import Menu from './components/Menu';
 import Navbar from './components/Navbar';
 import Register from './components/Register';
 import Cart from './components/Cart';
@@ -21,6 +21,7 @@ import AdminStoreLocation from './components/AdminStoreLocation';
 import CustomerList from './components/CustomerList';
 import AdminLayout from './components/AdminLayout';
 import { Routes, Route } from 'react-router-dom';
+import AdminMenuManagement from './components/AdminMenuManagement';
 function App() {
   return (
     <Provider store={store}>
@@ -29,8 +30,9 @@ function App() {
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
-            <Route path="/pizzas" element={<Pizzas />} />
+            {/* <Route path="/pizzas" element={<Pizzas />} /> */}
             {/* <Route path="/menu" element={<Menu />} /> */}
+            <Route path="/menu" element={<Menu />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/cart" element={<Cart />} />
@@ -61,6 +63,10 @@ function App() {
 
                     {/* Store Location Management */}
                     <Route path="/admin/store-locations" element={<AdminStoreLocation />} />
+
+
+                    {/* Store Location Management */}
+                    <Route path="/admin/menu" element={<AdminMenuManagement />} />
 
 
                     {/* <Route path="/admin/customers/:id" element={<CustomerDetails />} /> */}

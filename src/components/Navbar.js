@@ -6,7 +6,7 @@ import { ShoppingCart, Menu, X, Pizza } from 'lucide-react';
 import { useState } from 'react';
 function Navbar() {
   const { amount } = useSelector((store) => store.cart);
-  const { isAuthenticated } = useAuth();
+  const { isAuthenticated, isAdmin } = useAuth();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const toggleMobileMenu = () => {
@@ -26,14 +26,42 @@ function Navbar() {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-8">
+          {/* <div className="hidden md:flex items-center space-x-8">
             <Link 
               to="/pizzas" 
               className="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
             >
               Pizzas
             </Link>
+          </div> */}
+          <div className="hidden md:flex items-center space-x-3">
+            <Link 
+              to="/menu"
+              className="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+            >
+              Menu
+            </Link>
           </div>
+
+          <div className="hidden md:flex items-center space-x-3">
+            <Link 
+              to="/order-history"
+              className="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+            >
+              Orders
+            </Link>
+          </div>
+
+          { isAuthenticated && isAdmin && (
+          <div className="hidden md:flex items-center space-x-3">
+            <Link 
+              to="/admin/orders"
+              className="text-gray-700 hover:text-red-600 px-3 py-2 rounded-md text-sm font-medium transition-colors duration-200"
+            >
+              Admin
+            </Link>
+          </div>
+          )}
 
           {/* Desktop Auth & Cart */}
           <div className="hidden md:flex items-center space-x-4">
@@ -102,13 +130,13 @@ function Navbar() {
             >
               Home
             </Link>
-            <Link 
+            {/* <Link 
               to="/pizzas" 
               className="block px-3 py-2 text-gray-700 hover:text-red-600 hover:bg-red-50 rounded-md text-base font-medium transition-colors duration-200"
               onClick={() => setIsMobileMenuOpen(false)}
             >
               Pizzas
-            </Link>
+            </Link> */}
             
             {!isAuthenticated && (
               <>

@@ -47,11 +47,11 @@ export default function UserAddress() {
     } else {
       // No complete address found
       setExistingAddress(null);
-      // Keep form data as empty (or you could clear it here)
     }
-  }, []);
+  }, [user]);
 
-    const isFormValid = formData.address_line_1.trim() && 
+    const isFormValid = formData.address_line_1.trim() &&
+        formData.address_line_2.trim() &&
         formData.city.trim() && 
         formData.state.trim() && 
         formData.postal_code.trim();
@@ -76,7 +76,8 @@ export default function UserAddress() {
         
         try {
             let result;
-            
+            console.log('has existing address: ', hasExistingAddress);
+
             if (hasExistingAddress) {
                 // Update existing address
                 result = await put(token, formData);
@@ -95,7 +96,8 @@ export default function UserAddress() {
 
                 // Navigate to pizzas page after 1.5 seconds
                 setTimeout(() => {
-                    navigate('/pizzas');
+                    // navigate('/pizzas');
+                    navigate('/menu');
                 }, 2000);
             } else {
                 setError(result.message);
@@ -114,7 +116,8 @@ export default function UserAddress() {
     };
 
     const handleSkip = () => {
-        navigate('/pizzas');
+        // navigate('/pizzas');
+        navigate('/menu');
     };
 
     return (

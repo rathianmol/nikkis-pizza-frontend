@@ -7,7 +7,8 @@ import {
     BarChart3,
     Settings,
     ChevronRight,
-    Locate
+    Locate,
+    Menu
 } from 'lucide-react';
 
 const Sidebar = ({ isOpen }) => {
@@ -51,6 +52,14 @@ const Sidebar = ({ isOpen }) => {
             title: 'Locations',
             icon: Locate,
             path: '/admin/store-locations',
+            // submenu: [
+            //     { title: 'New Customer', path: '/admin/customer/create' },
+            // ],
+        },
+                {
+            title: 'Menu',
+            icon: Menu,
+            path: '/admin/menu',
             // submenu: [
             //     { title: 'New Customer', path: '/admin/customer/create' },
             // ],
