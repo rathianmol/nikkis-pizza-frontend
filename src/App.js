@@ -13,6 +13,7 @@ import Footer from './components/Footer';
 import OrderHistory from './components/OrderHistory';
 import OrderDetails from './components/OrderDetails';
 import { AuthProvider } from './contexts/AuthContext';
+import { StoreLocationsProvider } from './contexts/StoreLocationsContext';
 // import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import ProtectedRoutes from './utils/ProtectedRoutes';
 import AdminProtectedRoutes from './utils/AdminProtectedRoutes';
@@ -27,71 +28,73 @@ function App() {
     <Provider store={store}>
       {/* <Router> */}
         <AuthProvider>
-          <Navbar />
-          <Routes>
-            <Route path="/" element={<Home />} />
-            {/* <Route path="/pizzas" element={<Pizzas />} /> */}
-            {/* <Route path="/menu" element={<Menu />} /> */}
-            <Route path="/menu" element={<Menu />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route element={<ProtectedRoutes />}>
-              <Route path="/create-address" element={<UserAddress />} />
-              <Route path="/order-history" element={<OrderHistory />} />
-              <Route path="/orders/:orderId" element={<OrderDetails />} />
-            </Route>
-            {/* Admin-only routes */}
-            <Route element={<AdminProtectedRoutes />}>
-                {/* Dummy admin routes: */}
-                {/* <Route path="/admin" element={<AdminDashboard />} /> */}
-                {/* <Route path="/admin/users" element={<AdminUsers />} /> */}
-                {/* <Route path="/admin/settings" element={<AdminSettings />} /> */}
+          <StoreLocationsProvider>
+            <Navbar />
+            <Routes>
+              <Route path="/" element={<Home />} />
+              {/* <Route path="/pizzas" element={<Pizzas />} /> */}
+              {/* <Route path="/menu" element={<Menu />} /> */}
+              <Route path="/menu" element={<Menu />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route element={<ProtectedRoutes />}>
+                <Route path="/create-address" element={<UserAddress />} />
+                <Route path="/order-history" element={<OrderHistory />} />
+                <Route path="/orders/:orderId" element={<OrderDetails />} />
+              </Route>
+              {/* Admin-only routes */}
+              <Route element={<AdminProtectedRoutes />}>
+                  {/* Dummy admin routes: */}
+                  {/* <Route path="/admin" element={<AdminDashboard />} /> */}
+                  {/* <Route path="/admin/users" element={<AdminUsers />} /> */}
+                  {/* <Route path="/admin/settings" element={<AdminSettings />} /> */}
 
-                 <Route element={<AdminLayout />}>
-                    {/* Dashboard */}
-                    {/* <Route path="/admin" element={<AdminDashboard />} /> */}
+                  <Route element={<AdminLayout />}>
+                      {/* Dashboard */}
+                      {/* <Route path="/admin" element={<AdminDashboard />} /> */}
 
-                    {/* Orders */}
-                    <Route path="/admin/orders" element={<OrderList />} />
-                    {/* <Route path="/admin/orders/:id" element={<OrderDetails />} /> */}
+                      {/* Orders */}
+                      <Route path="/admin/orders" element={<OrderList />} />
+                      {/* <Route path="/admin/orders/:id" element={<OrderDetails />} /> */}
 
-                    {/* Customer Management */}
-                    <Route path="/admin/customers" element={<CustomerList />} />
-                    {/* <Route path="/admin/customers/:id" element={<CustomerDetails />} /> */}
-
-
-                    {/* Store Location Management */}
-                    <Route path="/admin/store-locations" element={<AdminStoreLocation />} />
+                      {/* Customer Management */}
+                      <Route path="/admin/customers" element={<CustomerList />} />
+                      {/* <Route path="/admin/customers/:id" element={<CustomerDetails />} /> */}
 
 
-                    {/* Store Location Management */}
-                    <Route path="/admin/menu" element={<AdminMenuManagement />} />
+                      {/* Store Location Management */}
+                      <Route path="/admin/store-locations" element={<AdminStoreLocation />} />
 
 
-                    {/* <Route path="/admin/customers/:id" element={<CustomerDetails />} /> */}
-                    {/* Menu Management */}
-                    {/* <Route path="/admin/menu/products" element={<MenuProducts />} />
-                    <Route path="/admin/menu/categories" element={<MenuCategories />} />
-                    <Route path="/admin/menu/variants" element={<MenuVariants />} /> */}
+                      {/* Store Location Management */}
+                      <Route path="/admin/menu" element={<AdminMenuManagement />} />
+
+
+                      {/* <Route path="/admin/customers/:id" element={<CustomerDetails />} /> */}
+                      {/* Menu Management */}
+                      {/* <Route path="/admin/menu/products" element={<MenuProducts />} />
+                      <Route path="/admin/menu/categories" element={<MenuCategories />} />
+                      <Route path="/admin/menu/variants" element={<MenuVariants />} /> */}
 
 
 
-                    {/* Reports */}
-                    {/* <Route path="/admin/reports/sales" element={<SalesReports />} />
-                    <Route path="/admin/reports/best-sellers" element={<BestSellers />} />
-                    <Route path="/admin/reports/coupons" element={<CouponTracking />} /> */}
+                      {/* Reports */}
+                      {/* <Route path="/admin/reports/sales" element={<SalesReports />} />
+                      <Route path="/admin/reports/best-sellers" element={<BestSellers />} />
+                      <Route path="/admin/reports/coupons" element={<CouponTracking />} /> */}
 
-                    {/* Settings */}
-                    {/* <Route path="/admin/settings/hours" element={<BusinessHours />} />
-                    <Route path="/admin/settings/delivery" element={<DeliveryZones />} />
-                    <Route path="/admin/settings/tax" element={<TaxRates />} />
-                    <Route path="/admin/settings/notifications" element={<Notifications />} /> */}
-                </Route>
-            </Route>
-            {/* <Route path="/create-address" element={<UserAddress />} /> */}
-          </Routes>
-          <Footer />
+                      {/* Settings */}
+                      {/* <Route path="/admin/settings/hours" element={<BusinessHours />} />
+                      <Route path="/admin/settings/delivery" element={<DeliveryZones />} />
+                      <Route path="/admin/settings/tax" element={<TaxRates />} />
+                      <Route path="/admin/settings/notifications" element={<Notifications />} /> */}
+                  </Route>
+              </Route>
+              {/* <Route path="/create-address" element={<UserAddress />} /> */}
+            </Routes>
+            <Footer />
+          </StoreLocationsProvider>
         </AuthProvider>
       {/* </Router> */}
     </Provider>
