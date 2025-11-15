@@ -120,7 +120,7 @@ export default function OrderHistory() {
 
   // Main Content: Orders List
   return (
-    <div className="max-w-4xl mx-auto p-6">
+    <div className="min-h-screen max-w-4xl mx-auto p-6">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Order History</h1>
         <p className="text-gray-600">Here are all the orders you've placed with us.</p>
