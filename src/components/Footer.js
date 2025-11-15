@@ -1,6 +1,18 @@
 import { Facebook, Instagram, Twitter, Phone, Mail, MapPin, Pizza } from 'lucide-react';
+import { useStoreLocation } from '../contexts/StoreLocationsContext';
 
 const Footer = () => {
+  const { getSelectedLocationObject, getPrimaryLocation } = useStoreLocation();
+  
+  // Get the selected location, fallback to primary if none selected
+  const location = getSelectedLocationObject() || getPrimaryLocation();
+
+  // Helper function to format hours display
+  const formatHours = (hours) => {
+    if (!hours || hours.toLowerCase() === 'closed') return 'Closed';
+    return hours;
+  };
+
   return (
     <footer className="bg-gray-900 text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -75,55 +87,93 @@ const Footer = () => {
             </ul>
           </div>
 
-          {/* Contact Info */}
+          {/* Contact Info - Dynamic from Store Location */}
           <div>
-            <h3 className="text-lg font-semibold mb-4">Contact Info</h3>
-            <div className="space-y-3">
-              <div className="flex items-center space-x-3">
-                <MapPin size={18} className="text-red-500 flex-shrink-0" />
-                <span className="text-gray-400">
-                  123 Pizza Street<br />
-                  Miami, FL 33101
+            <h3 className="text-lg font-semibold mb-4">
+              Contact Info
+              {location?.name && (
+                <span className="block text-sm text-gray-400 font-normal mt-1">
+                  {location.name}
                 </span>
+              )}
+            </h3>
+            {location ? (
+              <div className="space-y-3">
+                <div className="flex items-start space-x-3">
+                  <MapPin size={18} className="text-red-500 flex-shrink-0 mt-1" />
+                  <span className="text-gray-400">
+                    {location.address_line_1}
+                    {location.address_line_2 && (
+                      <>
+                        <br />
+                        {location.address_line_2}
+                      </>
+                    )}
+                    <br />
+                    {location.city}, {location.state} {location.postal_code}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Phone size={18} className="text-red-500 flex-shrink-0" />
+                  <a 
+                    href={`tel:${location.phone_number}`}
+                    className="text-gray-400 hover:text-red-500 transition-colors duration-300"
+                  >
+                    {location.phone_number}
+                  </a>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Mail size={18} className="text-red-500 flex-shrink-0" />
+                  <a 
+                    href={`mailto:${location.email}`}
+                    className="text-gray-400 hover:text-red-500 transition-colors duration-300"
+                  >
+                    {location.email}
+                  </a>
+                </div>
               </div>
-              <div className="flex items-center space-x-3">
-                <Phone size={18} className="text-red-500 flex-shrink-0" />
-                <a 
-                  href="tel:+1234567890" 
-                  className="text-gray-400 hover:text-red-500 transition-colors duration-300"
-                >
-                  (123) 456-7890
-                </a>
-              </div>
-              <div className="flex items-center space-x-3">
-                <Mail size={18} className="text-red-500 flex-shrink-0" />
-                <a 
-                  href="mailto:info@nikkispizza.com" 
-                  className="text-gray-400 hover:text-red-500 transition-colors duration-300"
-                >
-                  info@nikkispizza.com
-                </a>
-              </div>
-            </div>
+            ) : (
+              <p className="text-gray-400 text-sm">Loading location information...</p>
+            )}
           </div>
 
-          {/* Hours */}
+          {/* Hours - Dynamic from Store Location */}
           <div>
             <h3 className="text-lg font-semibold mb-4">Hours</h3>
-            <div className="space-y-2 text-gray-400">
-              <div className="flex justify-between">
-                <span>Monday - Thursday</span>
-                <span>11am - 10pm</span>
+            {location ? (
+              <div className="space-y-2 text-gray-400 text-sm">
+                <div className="flex justify-between gap-4">
+                  <span>Monday</span>
+                  <span className="text-right">{formatHours(location.monday_hours)}</span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span>Tuesday</span>
+                  <span className="text-right">{formatHours(location.tuesday_hours)}</span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span>Wednesday</span>
+                  <span className="text-right">{formatHours(location.wednesday_hours)}</span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span>Thursday</span>
+                  <span className="text-right">{formatHours(location.thursday_hours)}</span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span>Friday</span>
+                  <span className="text-right">{formatHours(location.friday_hours)}</span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span>Saturday</span>
+                  <span className="text-right">{formatHours(location.saturday_hours)}</span>
+                </div>
+                <div className="flex justify-between gap-4">
+                  <span>Sunday</span>
+                  <span className="text-right">{formatHours(location.sunday_hours)}</span>
+                </div>
               </div>
-              <div className="flex justify-between">
-                <span>Friday - Saturday</span>
-                <span>11am - 11pm</span>
-              </div>
-              <div className="flex justify-between">
-                <span>Sunday</span>
-                <span>12pm - 9pm</span>
-              </div>
-            </div>
+            ) : (
+              <p className="text-gray-400 text-sm">Loading hours...</p>
+            )}
           </div>
         </div>
 
